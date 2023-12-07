@@ -9,7 +9,7 @@
   - Normalization Terms / Other Diseases
   - Cancer Drugs
   - Race + Gender: 
-    - Cross-check race with SDOH paper.
+    - Cross-check race with SDOH paper: https://ascopubs.org/doi/abs/10.1200/CCI.22.00196.
     - Additional:
       - Consider adding Abby’s list of honorifics for expanded gender terms.
       - Nationality terms from Abby's list (used for the SDOH paper).
