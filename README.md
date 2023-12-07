@@ -8,12 +8,11 @@
     - Awaiting response from an oncology ontologist for appropriate vocabulary.
   - Normalization Terms / Other Diseases
   - Cancer Drugs
-  - SDOH (Social Determinants of Health) Terms
   - Race + Gender: 
-    - Cross-check race with SDOH terms.
-  - Additional:
-    - Consider adding Abby’s list of honorifics for expanded gender terms.
-    - Nationality terms from Abby's list (used for the SDOH paper).
+    - Cross-check race with SDOH paper.
+    - Additional:
+      - Consider adding Abby’s list of honorifics for expanded gender terms.
+      - Nationality terms from Abby's list (used for the SDOH paper).
 
 - **Test Running Co-occurrence Analysis**
   - Using only Arxiv (local database).
