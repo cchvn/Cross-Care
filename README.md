@@ -1,15 +1,37 @@
-# World According to LLMs
+# TODO 
 
-This project aims to understand the prevalence of disease mentions for 19 different diseases and compare them with GPT-4/Llama 2/Llama 1 Estimates. The goal is to understand biases among disease prevalence according to training data, model outputs, and the real world.
+---
 
-## Research Questions:
+### Checkpoint 1- Arxiv POC (Proof of Concept)
+- **Finalize Keywords Collection**
+  - Cancer Types:
+    - Awaiting response from an oncology ontologist for appropriate vocabulary.
+  - Normalization Terms / Other Diseases
+  - Cancer Drugs
+  - SDOH (Social Determinants of Health) Terms
+  - Race + Gender: 
+    - Cross-check race with SDOH terms.
+  - Additional:
+    - Consider adding Abby’s list of honorifics for expanded gender terms.
+    - Nationality terms from Abby's list (used for the SDOH paper).
 
-- How do skews in race-disease associations in pre-training data relate to race and gender biases in model outputs?
-- What metrics can we use to predict healthcare-related biases in outputs?
-- How well is “the world as it is” (true disease distributions) reflected in these open-source corpora?
-- Measuring co-occurrence between disease terms and race/ethnicity and gender keywords in pre-training data.
-- Can these results inform us about bias in the final model outputs? I.e., do co-occurrence ratios in pre-training data correlate with fine-tuned LLM bias?
-- How well do the pre-training datasets reflect true disease-demographic relationships? I.e., how well does the distribution of disease-demographic associations in the training data match ‘true’ distributions?
+- **Test Running Co-occurrence Analysis**
+  - Using only Arxiv (local database).
+
+### Checkpoint 2- Full Dataset Co-occurrences
+- **Expand Run to Complete Datasets**
+  - Redpajama
+  - Pile
+  - Mimic Notes
+
+- **Considerations**
+  - Should an internal dataset also be included?
+
+- **Setup Virtual Machine**
+  - Storage Requirement: 5TB
+  - Need to find AWS credit for this setup.
+
+---
 
 ## Repository Structure (Desired):
 
