@@ -6,13 +6,13 @@
 - **Finalize Keywords Collection**
   - Cancer Types:
     - Awaiting response from an oncology ontologist for appropriate vocabulary.
-  - Normalization Terms / Other Diseases
-  - Cancer Drugs
-  - Race + Gender: 
-    - Cross-check race with SDOH paper: https://ascopubs.org/doi/abs/10.1200/CCI.22.00196.
-    - Additional:
-      - Consider adding Abby’s list of honorifics for expanded gender terms.
-      - Nationality terms from Abby's list (used for the SDOH paper).
+  - Normalization Terms / Other Diseases (in progress)
+  - Cancer Drugs (in progress)
+- ~~Race + Gender:~~
+  - ~~Cross-check race with SDOH paper: https://ascopubs.org/doi/abs/10.1200/CCI.22.00196.~~
+  - Additional:
+    - ~~Consider adding Abby’s list of honorifics for expanded gender terms.~~
+    - ~~Nationality terms from Abby's list (used for the SDOH paper).~~
 
 - **Test Running Co-occurrence Analysis**
   - Using only Arxiv (local database).
