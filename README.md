@@ -6,7 +6,7 @@
 - **Finalize Keywords Collection**
   - Cancer Types:
     - Awaiting response from an oncology ontologist for appropriate vocabulary.
-  - ~Normalization Terms / Other Diseases (in progress)~
+  - ~~Normalization Terms / Other Diseases (in progress)~~
   - Cancer Drugs (in progress)
 - ~~Race + Gender:~~
   - ~~Cross-check race with SDOH paper: https://ascopubs.org/doi/abs/10.1200/CCI.22.00196.~~
