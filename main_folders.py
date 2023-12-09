@@ -2,18 +2,30 @@ import sys
 import yaml
 import pandas as pd
 import os
+import logging
+
+# Setting up logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(message)s",
+    handlers=[
+        logging.FileHandler("main.log"),
+        logging.StreamHandler(),
+    ],
+)
 
 # Importing necessary modules and functions
-sys.path.append('./dicts')
+sys.path.append("./dicts")
 
 from dict_gender import gender_keywords_dict
 from dict_medical import medical_keywords_dict
 from dict_racial import racial_keywords_dict
 
-sys.path.append('./src')
+sys.path.append("./src")
 
 from jsonl_data_filtering import jsonl_folder_filtering
 from co_occurrence_analysis import analyze_data_co_occurrence
+
 
 def load_config(config_name):
     """
@@ -25,8 +37,9 @@ def load_config(config_name):
     Returns:
     - dict: The configuration parameters.
     """
-    with open(f'configs/{config_name}.yaml', 'r') as file:
+    with open(f"configs/{config_name}.yaml", "r") as file:
         return yaml.safe_load(file)
+
 
 def main(config_name):
     """
@@ -39,13 +52,13 @@ def main(config_name):
     config = load_config(config_name)
 
     # Extract configuration parameters
-    input_folder_path = config['data']['input_folder_path']
-    output_folder_path = config['data']['output_folder_path']
-    metadata_keys = config['data']['metadata_keys']
-    remove_latex = config['processing']['remove_latex']
-    save_file = config['processing']['save_file']
-    filename = config['processing']['filename']
-    total_texts_filename = config['processing']['total_texts_filename']
+    input_folder_path = config["data"]["input_folder_path"]
+    output_folder_path = config["data"]["output_folder_path"]
+    metadata_keys = config["data"]["metadata_keys"]
+    remove_latex = config["processing"]["remove_latex"]
+    save_file = config["processing"]["save_file"]
+    filename = config["processing"]["filename"]
+    total_texts_filename = config["processing"]["total_texts_filename"]
 
     # Run data filtering
     filtered_data = jsonl_folder_filtering(
@@ -58,7 +71,7 @@ def main(config_name):
         remove_latex=remove_latex,
         save_file=save_file,
         filename=filename,
-        total_texts_filename=total_texts_filename
+        total_texts_filename=total_texts_filename,
     )
 
     # Run co-occurrence analysis
@@ -67,8 +80,9 @@ def main(config_name):
         data_path=f"{output_folder_path}/{filename}",
         medical_dict=medical_keywords_dict,
         racial_dict=racial_keywords_dict,
-        gender_dict=gender_keywords_dict
+        gender_dict=gender_keywords_dict,
     )
+
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
