@@ -162,7 +162,10 @@ def analyze_data_co_occurrence(
     df_output = pd.read_csv(data_path)
 
     output_dir = f"output_{source_name}"
+    # output_dir = f"output_{source_name}_cancer"
     os.makedirs(output_dir, exist_ok=True)
+
+    print("output_dir", output_dir)
 
     total_disease_counts = df_output[list(medical_dict.keys())].sum()
     total_disease_counts.to_csv(os.path.join(output_dir, "total_disease_counts.csv"))
@@ -199,12 +202,17 @@ def analyze_data_co_occurrence(
 
     # Co-occurrence within window sizes
     data = df_output["text"].tolist()
-    # window_sizes = [10, 50, 100, 250] # DEBUG: use smaller window sizes for testing
-    window_sizes = [10, 50]
+    window_sizes = [10, 50, 100, 250]
 
     for window in window_sizes:
         df_racial, df_gender, df_drug = co_occurrence_within_window(
-            data, medical_dict, racial_dict, gender_dict, window, aggregate=True
+            data,
+            medical_dict,
+            racial_dict,
+            gender_dict,
+            drug_dict,
+            window,
+            aggregate=True,
         )
 
         window_dir = os.path.join(output_dir, f"window_{window}")

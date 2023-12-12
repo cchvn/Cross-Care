@@ -183,6 +183,7 @@ def jsonl_folder_filtering(
             f.write(str(total_texts))
 
     df_output = pd.DataFrame(output_data)
+    print(df_output.shape)
 
     all_keyword_columns = (
         list(medical_patterns.keys())
@@ -191,13 +192,10 @@ def jsonl_folder_filtering(
         + list(drug_patterns.keys())
         + list(cancer_patterns.keys())
     )
-    for col in all_keyword_columns:
-        if col not in df_output.columns:
-            df_output[col] = 0
 
-    df_output[all_keyword_columns] = (
-        df_output[all_keyword_columns].fillna(0).astype(int)
-    )
+    for col in all_keyword_columns:
+        if col in df_output.columns:
+            df_output[col] = df_output[col].fillna(0).astype(int)
 
     # Assigning a unique text_id for each unique text
     df_output["text_id"] = pd.factorize(df_output["text"])[0]

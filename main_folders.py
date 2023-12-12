@@ -82,21 +82,10 @@ def main(config_name):
         total_texts_filename=total_texts_filename,
     )
 
-    print("filtered_data")
+    ##### Medical keywords #####
 
-    # Run co-occurrence analysis
-    analyze_data_co_occurrence(
-        source_name=config_name,
-        data_path=f"{output_folder_path}/{filename}",
-        medical_dict=medical_keywords_dict,
-        racial_dict=racial_keywords_dict,
-        gender_dict=gender_keywords_dict,
-        drug_dict=drug_keywords_dict,
-        # cancer_dict=cancer_keywords_dict,
-    )
-
-    # # Run co-occurrence analysis new
-    # analyze_data_co_occurrence_multi(
+    # # # Run co-occurrence analysis
+    # analyze_data_co_occurrence(
     #     source_name=config_name,
     #     data_path=f"{output_folder_path}/{filename}",
     #     medical_dict=medical_keywords_dict,
@@ -105,25 +94,42 @@ def main(config_name):
     #     drug_dict=drug_keywords_dict,
     # )
 
-    # uncomment to run cancer analysis original
-    # analyze_data_co_occurrence(
-    #     source_name=config_name,
-    #     data_path=f"{output_folder_path}/cancer_{filename}",
-    #     medical_dict=cancer_keywords_dict, # swapped out medical for cancer terms
-    #     racial_dict=racial_keywords_dict,
-    #     gender_dict=gender_keywords_dict,
-    #     drug_dict=drug_keywords_dict,
-    # )
+    # print("old_run_complete")
 
-    # uncomment to run cancer analysis new
+    # Run co-occurrence analysis new
     # analyze_data_co_occurrence_multi(
     #     source_name=config_name,
-    #     data_path=f"{output_folder_path}/cancer_{filename}",
-    #     medical_dict=cancer_keywords_dict,
+    #     data_path=f"{output_folder_path}/{filename}",
+    #     medical_dict=medical_keywords_dict,
     #     racial_dict=racial_keywords_dict,
     #     gender_dict=gender_keywords_dict,
     #     drug_dict=drug_keywords_dict,
     # )
+    # print("new_run_complete")
+
+    ##### Cancer keywords #####
+
+    # # uncomment to run cancer analysis original
+    # analyze_data_co_occurrence(
+    #     source_name=config_name,
+    #     data_path=f"{output_folder_path}/{filename}",
+    #     medical_dict=cancer_keywords_dict,  # swapped out medical for cancer terms
+    #     racial_dict=racial_keywords_dict,
+    #     gender_dict=gender_keywords_dict,
+    #     drug_dict=drug_keywords_dict,
+    # )
+    # print("old_run_complete")
+
+    # uncomment to run cancer analysis new
+    analyze_data_co_occurrence_multi(
+        source_name=config_name,
+        data_path=f"{output_folder_path}/{filename}",
+        medical_dict=cancer_keywords_dict,
+        racial_dict=racial_keywords_dict,
+        gender_dict=gender_keywords_dict,
+        drug_dict=drug_keywords_dict,
+    )
+    print("new_run_complete")
 
 
 if __name__ == "__main__":
