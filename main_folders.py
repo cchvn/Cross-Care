@@ -20,7 +20,6 @@ sys.path.append("./dicts")
 from dict_gender import gender_keywords_dict
 from dict_medical import medical_keywords_dict
 from dict_racial import racial_keywords_dict
-
 from dict_drug import drug_keywords_dict
 from dict_cancer import cancer_keywords_dict
 
@@ -97,15 +96,15 @@ def main(config_name):
     # print("old_run_complete")
 
     # Run co-occurrence analysis new
-    # analyze_data_co_occurrence_multi(
-    #     source_name=config_name,
-    #     data_path=f"{output_folder_path}/{filename}",
-    #     medical_dict=medical_keywords_dict,
-    #     racial_dict=racial_keywords_dict,
-    #     gender_dict=gender_keywords_dict,
-    #     drug_dict=drug_keywords_dict,
-    # )
-    # print("new_run_complete")
+    analyze_data_co_occurrence_multi(
+        source_name=config_name,
+        data_path=f"{output_folder_path}/{filename}",
+        medical_dict=medical_keywords_dict,
+        racial_dict=racial_keywords_dict,
+        gender_dict=gender_keywords_dict,
+        drug_dict=drug_keywords_dict,
+    )
+    print("new_run_complete")
 
     ##### Cancer keywords #####
 
@@ -121,16 +120,16 @@ def main(config_name):
     # print("old_run_complete")
 
     # uncomment to run cancer analysis new
-    analyze_data_co_occurrence_multi(
-        source_name=config_name,
-        data_path=f"{output_folder_path}/{filename}",
-        medical_dict=cancer_keywords_dict,
-        racial_dict=racial_keywords_dict,
-        gender_dict=gender_keywords_dict,
-        drug_dict=drug_keywords_dict,
-        cancer_suffix="_cancer",
-    )
-    print("new_run_complete")
+    # analyze_data_co_occurrence_multi(
+    #     source_name=config_name,
+    #     data_path=f"{output_folder_path}/{filename}",
+    #     medical_dict=cancer_keywords_dict,
+    #     racial_dict=racial_keywords_dict,
+    #     gender_dict=gender_keywords_dict,
+    #     drug_dict=drug_keywords_dict,
+    #     cancer_suffix="_cancer",
+    # )
+    # print("new_run_complete")
 
 
 if __name__ == "__main__":
