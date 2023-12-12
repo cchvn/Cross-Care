@@ -21,7 +21,7 @@ def create_keyword_pattern(keywords):
     return re.compile(pattern, re.IGNORECASE)
 
 
-def co_occurrence_within_window(data, medical_dict, racial_dict, gender_dict, window_size, aggregate=True):
+def co_occurrence_within_window(data, medical_dict, racial_dict, gender_dict, drug_dict, window_size, aggregate=True):
     """
     Calculate co-occurrences of medical terms with racial and gender terms within a specified window of words.
 
@@ -30,19 +30,23 @@ def co_occurrence_within_window(data, medical_dict, racial_dict, gender_dict, wi
         medical_dict (dict): Dictionary of medical keywords categorized by some keys.
         racial_dict (dict): Dictionary of racial keywords categorized by some keys.
         gender_dict (dict): Dictionary of gender keywords categorized by some keys.
+        drug_dict (dict): Dictionary of drug keywords categorized by some keys.
         window_size (int): Number of words to consider around the medical term match.
         aggregate (bool): If True, aggregates matches by category keys. If False, keeps individual term matches.
 
     Returns:
         df_racial (DataFrame): DataFrame containing co-occurrences with racial terms.
         df_gender (DataFrame): DataFrame containing co-occurrences with gender terms.
+        df_drug (DataFrame): DataFrame containing co-occurrences with drug terms.
     """
     co_occurrences_racial = defaultdict(lambda: defaultdict(int))
     co_occurrences_gender = defaultdict(lambda: defaultdict(int))
+    co_occurrences_drug = defaultdict(lambda: defaultdict(int))
     
     medical_patterns = {k: create_keyword_pattern(v) for k, v in medical_dict.items()}
     racial_patterns = {k: create_keyword_pattern(v) for k, v in racial_dict.items()}
     gender_patterns = {k: create_keyword_pattern(v) for k, v in gender_dict.items()}
+    drug_patterns = {k: create_keyword_pattern(v) for k, v in drug_dict.items()}
     
     for text in tqdm(data, desc="Processing documents"):
         for med_key, med_pattern in medical_patterns.items():
@@ -66,6 +70,11 @@ def co_occurrence_within_window(data, medical_dict, racial_dict, gender_dict, wi
                 for gender_key, gender_pattern in gender_patterns.items():
                     for gender_match in gender_pattern.finditer(context_str):
                         co_occurrences_gender[med_key if aggregate else med_match.group()][gender_key if aggregate else gender_match.group()] += 1
+                
+                # Check context for drug terms
+                for drug_key, drug_pattern in drug_patterns.items():
+                    for drug_match in drug_pattern.finditer(context_str):
+                        co_occurrences_drug[med_key if aggregate else med_match.group()][drug_key if aggregate else drug_match.group()] += 1
                         
     # Ensure all combinations are present
     if aggregate:
@@ -74,6 +83,8 @@ def co_occurrence_within_window(data, medical_dict, racial_dict, gender_dict, wi
                 co_occurrences_racial[med_key][race_key] += 0
             for gender_key in gender_patterns.keys():
                 co_occurrences_gender[med_key][gender_key] += 0
+            for drug_key in drug_patterns.keys():
+                co_occurrences_drug[med_key][drug_key] += 0
     else:
         for med_key, med_keywords in medical_dict.items():
             for med_keyword in med_keywords:
@@ -83,16 +94,22 @@ def co_occurrence_within_window(data, medical_dict, racial_dict, gender_dict, wi
                 for gender_key, gender_keywords in gender_dict.items():
                     for gender_keyword in gender_keywords:
                         co_occurrences_gender[med_keyword][gender_keyword] += 0
+                for drug_key, drug_keywords in drug_dict.items():
+                    for drug_keyword in drug_keywords:
+                        co_occurrences_drug[med_keyword][drug_keyword] += 0
                         
     # Convert co_occurrences dictionaries to dataframes
     df_racial = pd.DataFrame(co_occurrences_racial).fillna(0).astype(int).T
     df_gender = pd.DataFrame(co_occurrences_gender).fillna(0).astype(int).T
+    df_drug = pd.DataFrame(co_occurrences_drug).fillna(0).astype(int).T
 
-    return df_racial, df_gender
 
-def calculate_disease_by_group(stack_dataframe, medical_dict, gender_dict, racial_dict):
+    return df_racial, df_gender, df_drug
+
+def calculate_disease_by_group(stack_dataframe, medical_dict, gender_dict, racial_dict, drug_dict):
     result_gender_df = pd.DataFrame(0, index=medical_dict.keys(), columns=gender_dict.keys())
     result_race_df = pd.DataFrame(0, index=medical_dict.keys(), columns=racial_dict.keys())
+    result_drug_df = pd.DataFrame(0, index=medical_dict.keys(), columns=drug_dict.keys())
     
     for gender in gender_dict.keys():
         result_gender_df[gender] = stack_dataframe[medical_dict.keys()].multiply(stack_dataframe[gender], axis=0).sum()
@@ -100,9 +117,12 @@ def calculate_disease_by_group(stack_dataframe, medical_dict, gender_dict, racia
     for race in racial_dict.keys():
         result_race_df[race] = stack_dataframe[medical_dict.keys()].multiply(stack_dataframe[race], axis=0).sum()
     
-    return result_gender_df, result_race_df
+    for drug in drug_dict.keys():
+        result_drug_df[drug] = stack_dataframe[medical_dict.keys()].multiply(stack_dataframe[drug], axis=0).sum()
+    
+    return result_gender_df, result_race_df, result_drug_df
 
-def analyze_data_co_occurrence(source_name, data_path, medical_dict, racial_dict, gender_dict):
+def analyze_data_co_occurrence(source_name, data_path, medical_dict, racial_dict, gender_dict, drug_dict):
     df_output = pd.read_csv(data_path)
     
     output_dir = f'output_{source_name}'
@@ -121,24 +141,28 @@ def analyze_data_co_occurrence(source_name, data_path, medical_dict, racial_dict
     disease_date_counts.to_csv(os.path.join(output_dir, 'disease_date_counts.csv'))
     
     # 3: Disease Mention Counts with Each Race
-    disease_gender_counts, disease_race_counts = calculate_disease_by_group(df_output, medical_dict, gender_dict, racial_dict)
+    disease_gender_counts, disease_race_counts, disease_drug_counts = calculate_disease_by_group(df_output, medical_dict, gender_dict, racial_dict, drug_dict)
     
     disease_race_counts.to_csv(os.path.join(output_dir, 'disease_race_counts.csv'))
     
     # 4: Disease Mention Counts with Each Gender
     disease_gender_counts.to_csv(os.path.join(output_dir, 'disease_gender_counts.csv'))
+
+    # 5: Disease Mention Counts with Each Drug
+    disease_drug_counts.to_csv(os.path.join(output_dir, 'disease_drug_counts.csv'))
     
     # Co-occurrence within window sizes
     data = df_output['text'].tolist()
     window_sizes = [10, 50, 100, 250]
     
     for window in window_sizes:
-        df_racial, df_gender = co_occurrence_within_window(data, medical_dict, racial_dict, gender_dict, window, aggregate=True)
+        df_racial, df_gender, df_drug = co_occurrence_within_window(data, medical_dict, racial_dict, gender_dict, window, aggregate=True)
         
         window_dir = os.path.join(output_dir, f'window_{window}')
         os.makedirs(window_dir, exist_ok=True)
 
         df_racial.to_csv(os.path.join(window_dir, 'co_occurrence_racial.csv'))
         df_gender.to_csv(os.path.join(window_dir, 'co_occurrence_gender.csv'))
+        df_drug.to_csv(os.path.join(window_dir, 'co_occurrence_drug.csv'))
 
 

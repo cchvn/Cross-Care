@@ -41,7 +41,7 @@ def remove_latex_commands(s):
     return s.strip()
 
 
-def process_file(file_path, medical_patterns, racial_patterns, gender_patterns, metadata_keys, remove_latex):
+def process_file(file_path, medical_patterns, racial_patterns, gender_patterns, drug_patterns, cancer_patterns, metadata_keys, remove_latex):
     """
     Process a single JSONL file to extract relevant data.
     
@@ -80,7 +80,7 @@ def process_file(file_path, medical_patterns, racial_patterns, gender_patterns, 
                     for key in metadata_keys:
                         row_data[key] = meta_data.get(key, None)
                     
-                    for patterns in [medical_patterns, racial_patterns, gender_patterns]:
+                    for patterns in [medical_patterns, racial_patterns, gender_patterns, drug_patterns, cancer_patterns]:
                         for key, pattern in patterns.items():
                             row_data[key] = len(pattern.findall(text))
                     
@@ -91,7 +91,7 @@ def process_file(file_path, medical_patterns, racial_patterns, gender_patterns, 
     
     return output_data, total_texts
 
-def jsonl_folder_filtering(input_folder_path, medical_dict, racial_dict, gender_dict, metadata_keys=[], output_folder_path=None, remove_latex=True, save_file=True, filename="filtered_data.json", total_texts_filename="total_texts.txt"):
+def jsonl_folder_filtering(input_folder_path, medical_dict, racial_dict, gender_dict, drug_dict, cancer_dict, metadata_keys=[], output_folder_path=None, remove_latex=True, save_file=True, filename="filtered_data.json", total_texts_filename="total_texts.txt"):
     """
     Filter and process all JSONL files in a folder.
     
@@ -100,6 +100,8 @@ def jsonl_folder_filtering(input_folder_path, medical_dict, racial_dict, gender_
         medical_dict (dict): Dictionary of medical keywords.
         racial_dict (dict): Dictionary of racial keywords.
         gender_dict (dict): Dictionary of gender keywords.
+        drug_dict (dict): Dictionary of drug keywords.
+        cancer_dict (dict): Dictionary of cancer keywords.
         metadata_keys (list of str): List of metadata keys to extract.
         output_folder_path (str): Path to the folder where output should be saved.
         remove_latex (bool): Whether to remove LaTeX commands from the text.
@@ -114,11 +116,13 @@ def jsonl_folder_filtering(input_folder_path, medical_dict, racial_dict, gender_
     medical_patterns = {k: create_keyword_pattern(v) for k, v in medical_dict.items()}
     racial_patterns = {k: create_keyword_pattern(v) for k, v in racial_dict.items()}
     gender_patterns = {k: create_keyword_pattern(v) for k, v in gender_dict.items()}
+    drug_patterns = {k: create_keyword_pattern(v) for k, v in drug_dict.items()}
+    cancer_patterns = {k: create_keyword_pattern(v) for k, v in cancer_dict.items()}
     
     file_paths = [os.path.join(input_folder_path, file_name) for file_name in os.listdir(input_folder_path) if file_name.endswith(".jsonl")]
     
     with Pool(cpu_count()) as p:
-        results = p.starmap(process_file, [(file_path, medical_patterns, racial_patterns, gender_patterns, metadata_keys, remove_latex) for file_path in file_paths])
+        results = p.starmap(process_file, [(file_path, medical_patterns, racial_patterns, gender_patterns, drug_patterns, cancer_patterns, metadata_keys, remove_latex) for file_path in file_paths])
     
     output_data = [item for sublist, _ in results for item in sublist]
     total_texts = sum(total for _, total in results)
@@ -130,7 +134,7 @@ def jsonl_folder_filtering(input_folder_path, medical_dict, racial_dict, gender_
     
     df_output = pd.DataFrame(output_data)
     
-    all_keyword_columns = list(medical_patterns.keys()) + list(racial_patterns.keys()) + list(gender_patterns.keys())
+    all_keyword_columns = list(medical_patterns.keys()) + list(racial_patterns.keys()) + list(gender_patterns.keys()) + list(drug_patterns.keys()) + list(cancer_patterns.keys())
     for col in all_keyword_columns:
         if col not in df_output.columns:
             df_output[col] = 0
@@ -153,7 +157,7 @@ def jsonl_folder_filtering(input_folder_path, medical_dict, racial_dict, gender_
     
     return df_output
 
-def process_chunk(chunk, medical_patterns, racial_patterns, gender_patterns, metadata_keys, remove_latex):
+def process_chunk(chunk, medical_patterns, racial_patterns, gender_patterns, drug_patterns, cancer_patterns, metadata_keys, remove_latex):
     output_data = []
     total_texts = 0
     
@@ -174,7 +178,7 @@ def process_chunk(chunk, medical_patterns, racial_patterns, gender_patterns, met
                 for key in metadata_keys:
                     row_data[key] = meta_data.get(key, None)
                 
-                for patterns in [medical_patterns, racial_patterns, gender_patterns]:
+                for patterns in [medical_patterns, racial_patterns, gender_patterns, drug_patterns, cancer_patterns]:
                     for key, pattern in patterns.items():
                         row_data[key] = len(pattern.findall(text))
                 
@@ -185,10 +189,12 @@ def process_chunk(chunk, medical_patterns, racial_patterns, gender_patterns, met
     
     return output_data, total_texts
 
-def jsonl_single_file_filtering(file_path, medical_dict, racial_dict, gender_dict, metadata_keys=[], output_folder_path=None, remove_latex=True, save_file=True, filename="filtered_data.json", total_texts_filename="total_texts.txt"):
+def jsonl_single_file_filtering(file_path, medical_dict, racial_dict, gender_dict, drug_dict, cancer_dict, metadata_keys=[], output_folder_path=None, remove_latex=True, save_file=True, filename="filtered_data.json", total_texts_filename="total_texts.txt"):
     medical_patterns = {k: create_keyword_pattern(v) for k, v in medical_dict.items()}
     racial_patterns = {k: create_keyword_pattern(v) for k, v in racial_dict.items()}
     gender_patterns = {k: create_keyword_pattern(v) for k, v in gender_dict.items()}
+    drug_patterns = {k: create_keyword_pattern(v) for k, v in drug_dict.items()}
+    cancer_patterns = {k: create_keyword_pattern(v) for k, v in cancer_dict.items()}
     
     with open(file_path, 'r') as file:
         lines = file.readlines()
@@ -205,6 +211,8 @@ def jsonl_single_file_filtering(file_path, medical_dict, racial_dict, gender_dic
                                 medical_patterns=medical_patterns, 
                                 racial_patterns=racial_patterns, 
                                 gender_patterns=gender_patterns, 
+                                drug_patterns=drug_patterns,
+                                cancer_patterns=cancer_patterns,
                                 metadata_keys=metadata_keys, 
                                 remove_latex=remove_latex), 
                         chunks)
