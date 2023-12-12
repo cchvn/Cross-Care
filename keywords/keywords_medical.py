@@ -740,6 +740,7 @@ medical_keywords = [
         "Libman-Sacks Disease",
         "Disease, Libman-Sacks",
         "Libman Sacks Disease",
+        "SLE",
         # 202852009.0
         "tendonitis in my shoulders",
         # 202882003.0
