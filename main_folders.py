@@ -128,6 +128,7 @@ def main(config_name):
         racial_dict=racial_keywords_dict,
         gender_dict=gender_keywords_dict,
         drug_dict=drug_keywords_dict,
+        cancer_suffix="_cancer",
     )
     print("new_run_complete")
 

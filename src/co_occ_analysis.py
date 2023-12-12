@@ -137,7 +137,13 @@ def calculate_disease_by_group(
 
 
 def analyze_data_co_occurrence(
-    source_name, data_path, medical_dict, racial_dict, gender_dict, drug_dict
+    source_name,
+    data_path,
+    medical_dict,
+    racial_dict,
+    gender_dict,
+    drug_dict,
+    cancer_suffix="",
 ):
     """
     Main function to analyze data for co-occurrence.
@@ -149,7 +155,7 @@ def analyze_data_co_occurrence(
         return
 
     # output_dir = f"output_{source_name}"
-    output_dir = f"output_{source_name}_cancer"
+    output_dir = f"output_{source_name}{cancer_suffix}"
     os.makedirs(output_dir, exist_ok=True)
 
     total_disease_counts = df_output[list(medical_dict.keys())].sum()
