@@ -1,4 +1,4 @@
-drug_keywords = [word.lower() for word in [
+cancerdrug_keywords = [word.lower() for word in [
   #4 
 'Abemaciclib', 'LY2835219', 'Verzenio', 'Verzenios', 
 
