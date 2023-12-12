@@ -1,4 +1,4 @@
-drug_keywords_dict = {
+cancerdrug_keywords_dict = {
   #4 
   "4": ['Abemaciclib', 'LY2835219', 'Verzenio', 'Verzenios'], 
   
@@ -1201,5 +1201,5 @@ drug_keywords_dict = {
 
 }
 
-drug_keywords_dict = {key.lower(): [word.lower() for word in value] 
-                        for key, value in drug_keywords_dict.items()}
+cancerdrug_keywords_dict = {key.lower(): [word.lower() for word in value] 
+                        for key, value in cancerdrug_keywords_dict.items()}
