@@ -82,6 +82,8 @@ def main(config_name):
         total_texts_filename=total_texts_filename,
     )
 
+    print("filtered_data")
+
     # Run co-occurrence analysis
     analyze_data_co_occurrence(
         source_name=config_name,
@@ -93,15 +95,15 @@ def main(config_name):
         # cancer_dict=cancer_keywords_dict,
     )
 
-    # Run co-occurrence analysis new
-    analyze_data_co_occurrence_multi(
-        source_name=config_name,
-        data_path=f"{output_folder_path}/{filename}",
-        medical_dict=medical_keywords_dict,
-        racial_dict=racial_keywords_dict,
-        gender_dict=gender_keywords_dict,
-        drug_dict=drug_keywords_dict,
-    )
+    # # Run co-occurrence analysis new
+    # analyze_data_co_occurrence_multi(
+    #     source_name=config_name,
+    #     data_path=f"{output_folder_path}/{filename}",
+    #     medical_dict=medical_keywords_dict,
+    #     racial_dict=racial_keywords_dict,
+    #     gender_dict=gender_keywords_dict,
+    #     drug_dict=drug_keywords_dict,
+    # )
 
     # uncomment to run cancer analysis original
     # analyze_data_co_occurrence(
