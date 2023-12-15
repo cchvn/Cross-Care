@@ -1,17 +1,20 @@
 # Dashboard for Cross Care
 
-# To edit
-run `npm install` to install dependencies
-run `npm run dev` to start the dev server
+# To run locally 
 
-make sure you have flask installed
-run `pip install flask` to install flask
-run `python app/tables/data_sort.py` to start the flask server
-
-# To deploy
-run `npm run build` to build the project
-
-Go to vercel.com and deploy the project
+**Change directory to cross-care-dash**
+```bash
+cd cross-care-dash
+```
+**Then run the following commands to install dependencies and start the dev server**
+```bash
+npm install
+npm run dev
+```
+**To run flask server**
+```bash
+pip install flask
+python app/tables/data_sort.py
 ```
 
 
