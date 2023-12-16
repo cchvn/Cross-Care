@@ -40,12 +40,12 @@ cancer_keywords = [
         "Wilms' Tumour",
         "Wilm's Tumour",
         "Wilms Tumor",
-        "Wilms Tumour".
+        "Wilms Tumour",
         "Nephroblastoma",
         "Denys-Drash Syndrome",
         "WAGR Syndrome",
         # Ovarian Tumors
-        "Ovarian Epithelial Carcinoma",
+        # "Ovarian Epithelial Carcinoma", duplicate
         "Granulosa Cell Tumor",
         "Granulosa Cell Tumour",
         "Hereditary Breast and Ovarian Cancer Syndrome",
@@ -54,7 +54,7 @@ cancer_keywords = [
         "Meig's Syndrome",
         "Sertoli-Leydig Cell Tumor",
         "Sertoli-Leydig Cell Tumour",
-        "Thecoma",
+        # "Thecoma", duplicate
         "Krukenberg Tumor",
         "Krukenberg Tumour",
         "Brenner Tumor",
@@ -90,7 +90,7 @@ cancer_keywords = [
         "Vulva Cancer",
         "Vulvar Cancer",
         "Vulva Squamous Cell Carcinoma",
-        "Vulvar SCC",
+        "Vulva SCC",
         "SCC of the Vulva",
         "Squamous Cell Carcinoma of the Vulva",
         "Vulvar Squamous Cell Carcinoma",
@@ -111,9 +111,9 @@ cancer_keywords = [
         "Neck Cancer",
         "Cancer of the Neck",
         "Squamous Cell Carcinoma of the Head and Neck",
-        "Head and Neck Squamous Cell Carcinoma",
-        "Head and Neck SCC",
-        "SCC of the Head and Neck",
+        # "Head and Neck Squamous Cell Carcinoma", duplicate
+        # "Head and Neck SCC", duplicate
+        # "SCC of the Head and Neck", duplicate
         # Facial
         "Facial Neoplasm",
         "Eyelid Neoplasm",
@@ -136,12 +136,12 @@ cancer_keywords = [
         "Cancer of Lip",
         "Cancer of the Lip",
         "Lip Cancer",
-        "Oropharyngeal Neoplasm",
+        # "Oropharyngeal Neoplasm",   duplicate
         "Oropharynx Neoplasm",
         "Cancer of Oropharnyx",
         "Cancer of the Oropharynx",
         "Oropharnyx Cancer",
-        "Oropharyngeal Cancer",
+        # "Oropharyngeal Cancer", duplicate
         "Tonsil Neoplasm",
         "Tonsillar Neoplasm",
         "Cancer of Tonsil",
@@ -154,15 +154,13 @@ cancer_keywords = [
         "Gingival Carcinoma",
         "Cancer of the Gingiva",
         "Gingival Squamous Cell Carcinoma",
-        "Gingival SCC",
-        "Cancer of the Gingiva",
+        # "Gingival SCC", duplicate
         "Gum Cancer",
         "Cancer of the Gums",
         "Buccal Cancer",
         "Buccal Carcinoma",
-        "Cancer of the Gingiva",
-        "Buccal Squamous Cell Carcinoma",
-        "Buccal SCC",
+        # "Buccal Squamous Cell Carcinoma", duplicate
+        # "Buccal SCC",  # duplicate
         # ENT
         "Otorhinolaryngologic Neoplasm",
         "Ootorhinolaryngeal Neoplasm",
@@ -206,7 +204,7 @@ cancer_keywords = [
         "Oral cavity Neoplasm",
         "Cancer of oral cavity",
         "oral cavity Cancer",
-        "oropharynx Neoplasm",
+        # "oropharynx Neoplasm", duplicate
         "Cancer of oropharynx",
         "oropharynx Cancer",
         "oropharyngeal Neoplasm",
@@ -215,7 +213,7 @@ cancer_keywords = [
         "cancer of the tongue",
         "base of tongue cancer",
         "cancer of the base of tongue",
-        "lip cancer",
+        # "lip cancer", duplicate
         "cancer og the lip",
         "Nose Neoplasm",
         "Nasal Neoplasm",
@@ -229,19 +227,18 @@ cancer_keywords = [
         "Pharynx Cancer",
         "Cancer of the Pharynx",
         "Pharyngeal Cancer",
-        "Nasopharyngeal Carcinoma",
-        "Tonsillar Neoplasm",
+        # "Nasopharyngeal Carcinoma", duplicate
+        # "Tonsillar Neoplasm", duplicate
         "SCC of the Head and Neck",
         "Head and Neck SCC",
         "Head And Neck Squamous Cell Carcinoma",
-        "Squamous Cell Carcinoma of the Head and Neck",
-        "Squamous Cell Carcinoma of the Larynx",
+        # "Squamous Cell Carcinoma of the Head and Neck", duplicate
+        # "Squamous Cell Carcinoma of the Larynx", duplicate
         "Oral Tongue Squamous Cell Carcinoma",
         "Tongue Squamous Cell Carcinoma",
-        "Hypopharyngeal Squamous Cell Carcinoma",
+        # "Hypopharyngeal Squamous Cell Carcinoma", duplicate
         "Oral Squamous Cell Carcinoma",
         "Oropharyngeal Squamous Cell Carcinoma",
-        "SCC of the Head and Neck",
         "SCC of the Larynx",
         "Oral Tongue SCC",
         "Tongue SCC",
@@ -255,14 +252,14 @@ cancer_keywords = [
         "SCC of the Nasopharynx",
         "NUT midline tumor",
         "NUT midline tumour",
-        "lip squamous cell carcinoma",
+        # "lip squamous cell carcinoma", duplicate
         "squamous cell carcinoma of the lip",
-        "tonsillar squamous cell carcinoma",
+        # "tonsillar squamous cell carcinoma",
         "squamous cell carcinoma of the tonsil",
         "oral cavity squamous cell carcinoma",
         "squamous cell carcinoma of the oral cavity",
         "oropharynx squamous cell carcinoma",
-        "oropharyngeal squamous cell carcinoma",
+        # "oropharyngeal squamous cell carcinoma", duplicate
         "squamous cell carcinoma of the oropharynx",
         "tonsil squamous cell carcinoma",
         "pharynx squamous cell carcinoma",
@@ -271,7 +268,7 @@ cancer_keywords = [
         "hypopharynx squamous cell carcinoma",
         "hypopharyngeal squamous cell carcinoma",
         "squamous cell carcinoma of the hypopharynx",
-        "tongue squamous cell carcinoma",
+        # "tongue squamous cell carcinoma", duplicate
         "squamous cell carcinoma of the tongue",
         "base of tongue squamous cell carcinoma",
         "squamous cell carcinoma of the base of tongue",
@@ -283,76 +280,75 @@ cancer_keywords = [
         "squamous cell carcinoma of the glottis",
         "subglottis squamous cell carcinoma",
         "subglottic squamous cell carcinoma",
-        "squamous cell carcinoma of the subglottis”,
+        "squamous cell carcinoma of the subglottis",
         "supraglottis squamous cell carcinoma",
         "supraglottic squamous cell carcinoma",
-        "squamous cell carcinoma of the supraglottis”,
+        "squamous cell carcinoma of the supraglottis",
         "nasopharynx squamous cell carcinoma",
         "nasopharyngeal squamous cell carcinoma",
-        "squamous cell carcinoma of the nasopharynx”,
+        "squamous cell carcinoma of the nasopharynx",
         "gum squamous cell carcinoma",
-        "gum squamous cell carcinoma",
-        "squamous cell carcinoma of the gum”,
+        # "gum SCC", duplicate
+        "squamous cell carcinoma of the gum",
         "buccal squamous cell carcinoma",
         "mouth squamous cell carcinoma",
-        "squamous cell carcinoma of the mouth”,
+        "squamous cell carcinoma of the mouth",
         "nasal cavity squamous cell carcinoma",
-        "squamous cell carcinoma of the nasal cavity”,
+        "squamous cell carcinoma of the nasal cavity",
         "ethmoid sinus squamous cell carcinoma",
-        "squamous cell carcinoma of the ethmoid sinus”,
-        "oral squamous cell carcinoma",
-        "gingival squamous cell carcinoma",
+        "squamous cell carcinoma of the ethmoid sinus",
+        # "oral squamous cell carcinoma", duplicate
         "gingiva squamous cell carcinoma",
-        "squamous cell carcinoma of the gingiva”,
+        "squamous cell carcinoma of the gingiva",
         "lip squamous cell carcinoma",
         "SCC of the lip",
-        "tonsillar SCC",
+        # "tonsillar SCC", duplicate
         "SCC of the tonsil",
         "oral cavity SCC",
         "SCC of the oral cavity",
         "oropharynx SCC",
-        "oropharyngeal SCC",
+        # "oropharyngeal SCC", duplicate
         "SCC of the oropharynx",
         "tonsil SCC",
         "pharynx SCC",
         "pharyngeal SCC",
         "SCC of the pharynx",
         "hypopharynx SCC",
-        "hypopharyngeal SCC",
+        # "hypopharyngeal SCC", duplicate
         "SCC of the hypopharynx",
-        "tongue SCC",
+        # "tongue SCC", duplicate
         "SCC of the tongue",
         "base of tongue SCC",
         "SCC of the base of tongue",
         "larynx SCC",
         "laryngeal SCC",
-        "SCC of the larynx",
+        # "SCC of the larynx", duplicate
         "glottis SCC",
         "glottic SCC",
         "SCC of the glottis",
         "subglottis SCC",
         "subglottic SCC",
-        "SCC of the subglottis”,
+        "SCC of the subglottis",
         "supraglottis SCC",
         "supraglottic SCC",
-        "SCC of the supraglottis”,
+        "SCC of the supraglottis",
         "nasopharynx SCC",
         "nasopharyngeal SCC",
-        "SCC of the nasopharynx”,
+        # "SCC of the nasopharynx",
+        # "gum squamous cell carcinoma",
         "gum SCC",
-        "gum SCC",
-        "SCC of the gum”,
+        "SCC of the gum",
         "buccal SCC",
         "mouth SCC",
-        "SCC of the mouth”,
+        "SCC of the mouth",
         "nasal cavity SCC",
-        "SCC of the nasal cavity”,
+        "SCC of the nasal cavity",
         "ethmoid sinus SCC",
-        "SCC of the ethmoid sinus”,
-        "oral SCC",
+        "SCC of the ethmoid sinus",
+        # "oral SCC",
         "gingival SCC",
         "gingiva SCC",
-        "SCC of the gingiva”,
+        "SCC of the gingiva",
         # Salivary Gland Cancer
         "Salivary Gland Neoplasm",
         "Salivary Gland Lymphadenoma",
@@ -365,19 +361,12 @@ cancer_keywords = [
         "Cancer of Parotid",
         "Parotid Cancer",
         "Cancer of the Parotid",
-        "Salivary Gland Neoplasm",
-        "Salivary Gland Lymphadenoma",
-        "Non-Sebaceous Lymphadenoma",
-        "Cancer of Salivary Gland",
-        "Cancer of the Salivary Gland",
-        "Salivary Gland Cancer",
-        "Sebaceous Lymphadenoma",
         "Sublingual Gland Neoplasm",
         "Submandibular Gland Neoplasm",
         "Adenoid Cystic Carcinoma",
         "Pleomorphic Adenoma",
         "Acinic Cell Carcinoma",
-        "Clear Cell Carcinoma",
+        # "Clear Cell Carcinoma", duplicate
         "Warthin's tumor",
         "Warthin's tumour",
         "mucoepidermoid tumor",
@@ -398,7 +387,7 @@ cancer_keywords = [
         "Embryonal Cancer",
         "Germ Cell Cancer",
         "Embryonal Carcinoma",
-        "Chordoma",
+        # "Chordoma", duplicate
         "Germinoma",
         "Dysgerminoma",
         "Disgerminoma",
@@ -412,7 +401,7 @@ cancer_keywords = [
         "Teratocarcinomas",
         "Teratomas",
         "Dysembryoma",
-        "Teratoid Tumour",
+        # "Teratoid Tumour", duplicate
         "Benign Teratoma",
         "Malignant Teratoma",
         "Immature Teratoma",
@@ -448,7 +437,7 @@ cancer_keywords = [
         "Breast Carcinoma",
         "Carcinoma of the breast",
         "Paget's Disease of the breast",
-        "Hereditary Breast and Ovarian Cancer Syndrome",
+        # "Hereditary Breast and Ovarian Cancer Syndrome", duplicate
         "Inflammatory Breast Neoplasm",
         "Inflammatory Breast cancer",
         "Triple Negative Breast Neoplasm",
@@ -470,15 +459,15 @@ cancer_keywords = [
         "Adrenal Gland cancer",
         "Multiple Endocrine Neoplasia",
         "Ovarian epithelial Carcinoma",
-        "Granulosa Cell Tumor",
-        "Granulosa Cell Tumour",
-        "Hereditary Breast and Ovarian Cancer Syndrome",  # look at duplicates in keywords -> can duplicate in dictionary
-        "Luteoma",
-        "Meigs Syndrome",
-        "Sertoli-Leydig Cell Tumor",
-        "Sertoli-Leydig Cell Tumour",
+        # "Granulosa Cell Tumor", duplicate
+        # "Granulosa Cell Tumour", duplicate
+        # "Hereditary Breast and Ovarian Cancer Syndrome",  #look at duplicates in keywords -> can duplicate in dictionary
+        # "Luteoma",
+        # "Meigs Syndrome", duplicate
+        # "Sertoli-Leydig Cell Tumor", # look at duplicates in keywords -> can duplicate in dictionary
+        # "Sertoli-Leydig Cell Tumour", # look at duplicates in keywords -> can duplicate in dictionary
         "Thecoma",
-        "Islet Cell Adenoma",
+        # "Islet Cell Adenoma", duplicate
         "Islet Cell Carcinoma",
         "Pancreatic Ductal Carcinoma",
         "Pancreatic Intraductal Neoplasm",
@@ -506,15 +495,15 @@ cancer_keywords = [
         "Merkel Tumours",
         "Merkel Cell Tumor",
         "Merkel Cell Tumour",
-        "Merkel Cell Cancer",
+        # Merkel Cell ",
         "Merkel Cell Carcinoma",
         # Parathyroid Cancer
-        "Parathyroid Neoplasm",
+        # "Parathyroid Neoplasm", duplicate
         "Parathyroid Adenoma",
         "Parathyroid Carcinoma",
         "Cancer of Parathyroid",
-        "Parathyroid Cancer",
-        "Cancer of the Parathyroid",
+        # "Parathyroid Cancer", duplicate
+        # "Cancer of the Parathyroid", duplicate
         # Paraganglioma
         "Paragangliomas",
         "Gangliocytic Paraganglioma",
@@ -564,16 +553,16 @@ cancer_keywords = [
         "Follicular Cancer Of Thyroid",
         "Anaplastic Carcinoma Of Thyroid",
         "Medullary Carcinoma Of Thyroid",
-        "Follicular Carcinoma Of Thyroid",  
-        "Parathyroid Cancer",
-        "Parathyroid Carcinoma",
+        "Follicular Carcinoma Of Thyroid",
+        # "Parathyroid Cancer", duplicate
+        # "Parathyroid Carcinoma",
         "Cancer of the Parathyroid",
         "Carcinoma of the Parathyroid",
-        #Neuroendocrine Tumors NOS
-        "Apudoma", 
-        "Carcinoid Tumor", 
-        "Carcinoid Tumour", 
-        "Malignant Carcinoid Syndrome", 
+        # Neuroendocrine Tumors NOS
+        "Apudoma",
+        "Carcinoid Tumor",
+        "Carcinoid Tumour",
+        "Malignant Carcinoid Syndrome",
         # Retinoblastoma
         "Retinoblastomas",
         "Retinal Neuroblastoma",
@@ -696,7 +685,7 @@ cancer_keywords = [
         "Fallopian Tube Cancer",
         "Cancer of the Fallopian Tube",
         # leukemia
-        "Leukemia",
+        # "Leukemia", duplicate see later
         "Leucocythaemia",
         "Leucocythemia",
         # Acute Lymphoblastic Leukemia
@@ -761,7 +750,7 @@ cancer_keywords = [
         "Follicular lymphoma",
         "diffuse large B-cell lymphoma",
         " DLBCL ",
-        "small lymphocytic lymphoma",
+        # "small lymphocytic lymphoma", duplicate
         "orbital lymphoma",
         "high grade B-cell lymphoma",
         "B-cell lymphoma",
@@ -870,8 +859,7 @@ cancer_keywords = [
         "Epithelioid Sarcoma",
         "Epithelioid Sarcomas",
         "Spindle Cell Sarcoma",
-        "Spindle Cell Sarcomas"
-        "Alveolar Sarcoma",
+        "Spindle Cell Sarcomas" "Alveolar Sarcoma",
         "Alveolar Sarcomas",
         "desmoid tumor",
         "desmoid tumour",
@@ -879,7 +867,6 @@ cancer_keywords = [
         "chondrosarcoma",
         # Brain Tumor
         "Brain Neoplasm",
-        "Brain Tumour",
         "Brain Tumor",
         "Brain Tumour",
         "Intracranial Neoplasm",
@@ -961,10 +948,10 @@ cancer_keywords = [
         "Glioblastoma",
         " GMB ",
         "Anaplastic Astrocytoma",
-        "Anaplastic glioma",
+        # "Anaplastic glioma", # look at duplicates in keywords -> can duplicate in dictionary
         "Oligoastrocytoma",
         "pilocytic astrocytoma",
-        #Oligodendroglioma
+        # Oligodendroglioma
         "Oligodendroglioma",
         # Gliomas
         "Gliomas",
@@ -986,8 +973,8 @@ cancer_keywords = [
         # Central Nervous System Atypical Teratoid/Rhabdoid Tumor
         "Rhabdoid Tumor",
         "Rhabdoid Tumour",
-        "Teratomas",
-        "Dysembryoma",
+        # "Teratomas", duplicate
+        # "Dysembryoma", duplicate
         "Teratoid Tumor",
         "Teratoid Tumour",
         "Atypical Teratoid/Rhabdoid Tumour",
@@ -1003,7 +990,7 @@ cancer_keywords = [
         "Rathke's Pouch Tumour",
         "Rathkes Pouch Tumour",
         "Rathke Pouch Tumour",
-        "Rathke's Cleft Neoplasm",
+        # "Rathke's Cleft Neoplasm", duplicate
         "Rathkes Cleft Neoplasm",
         "Rathke Cleft Neoplasm",
         # Ependymoma
@@ -1013,7 +1000,7 @@ cancer_keywords = [
         "Neuroblastomas",
         "Ganglioneuroblastoma",
         "neuroblastoma",
-        #neuroepithelial neoplasms
+        # neuroepithelial neoplasms
         "astroblastoma",
         "Ependymoastrocytoma",
         "Melanotic Neuroectodermal Tumor",
@@ -1024,26 +1011,25 @@ cancer_keywords = [
         "Melanotic Progonoma",
         "Neuroendocrine Tumor",
         "Neuroendocrine Tumour",
-        #Meningioma
+        # Meningioma
         "Meningioma",
         "meningiomas",
-        #Benign CNS tumors NOS
-        "hemangiopericytoma”,
-        "craniopharyngioma”,
+        # Benign CNS tumors NOS
+        "hemangiopericytoma",
+        # "craniopharyngioma", duplicate
         "Craniopharyngioma",
-        "Rathke's Pouch Tumor",
-        "Rathke's Pouch Tumour",
+        # "Rathke's Pouch Tumor", duplicate
+        # "Rathke's Pouch Tumour",
         "Rathke's Cleft Neoplasm",
         "Papillary Craniopharyngioma",
         "Adamantinous Craniopharyngioma",
-        "Neurilemmoma", 
+        "Neurilemmoma",
         "Acoustic Neuroma",
-        "vestibular schwannoma", 
+        "vestibular schwannoma",
         "solitary fibrous tumor",
         "solitary fibrous tumour",
         # Lung cancer
-        "Lung Cancer,"
-        "tracheal cancer",
+        "Lung Cancer," "tracheal cancer",
         # Lung Cancer, Non-Small Cell
         "Non-Small-Cell Lung Carcinomas",
         "Non-Small-Cell Lung Carcinoma",
@@ -1079,7 +1065,7 @@ cancer_keywords = [
         # T-Cell Lymphoma, Cutaneous
         "Cutaneous T-Cell Lymphoma",
         "Cutaneous T Cell Lymphoma",
-        #T-Cell Lympphoma
+        # T-Cell Lympphoma
         "T-cell lymphoma",
         "T cell lymphoma",
         "NK-T cell lymphoma",
@@ -1109,8 +1095,8 @@ cancer_keywords = [
         "Skin Cancer",
         "Acanthoma",
         "Muir-Torre Syndrome",
-        "squamous cell carcinoma",
-        " SCC ", # space before and after
+        # "squamous cell carcinoma", duplicate
+        # " SCC ",  # space before and after duplicate
         "basal cell carcinoma",
         "melanoma",
         # Anal Cancer
@@ -1159,10 +1145,8 @@ cancer_keywords = [
         "rectal adenocarcinoma",
         "rectal cancer",
         "sigmoid cancer",
-        "sigmoid carcinoma",
         "sigmoid adenocarcinoma",
         "rectosigmoid cancer",
-        "rectosigmoid carcinoma",
         "rectosigmoid adenocarcinoma",
         "bowel cancer",
         "bowel carcinoma",
@@ -1190,9 +1174,9 @@ cancer_keywords = [
         "Gall Bladder Cancer",
         "Gall Bladder Cancers",
         "Cancer of the Gallbladder",
-        "Cholangiocarcinoma"
+        # "Cholangiocarcinoma", duplicate
         "Gallbladder carcinoma",
-        "Gallbladder adenocarcinoma",   
+        "Gallbladder adenocarcinoma",
         "Gallbladder squamous cell carcinoma",
         "Gallbladder SCC",
         # Gastrointestinal Stromal Tumors (GIST)
@@ -1222,8 +1206,8 @@ cancer_keywords = [
         "Liver Cancers",
         "Cancer of the Liver",
         " HCC ",
-        "Intrahepatic cholangiocarcinoma",
-        "cholangiocarcinoma", 
+        # "Intrahepatic cholangiocarcinoma", duplicate
+        # "cholangiocarcinoma", duplicate
         # Pancreatic Cancer
         "Pancreatic Neoplasm",
         "Pancreas Neoplasm",
@@ -1234,10 +1218,9 @@ cancer_keywords = [
         "Insulinoma",
         "Gastrinoma",
         "Glucagonoma",
-        "Somatostatinoma",
-        "Vipoma",
-        "Pancreatic Intraductal Neoplasm"
-        "Pancreatic adenocarcinoma",
+        # "Somatostatinoma", duplicate
+        # "Vipoma", duplicate
+        "Pancreatic Intraductal Neoplasm" "Pancreatic adenocarcinoma",
         "Adenocarcinoma of the pancreas",
         "Pancreatic Carcinoma",
         "Pancreas adenocarcinoma",
@@ -1267,7 +1250,7 @@ cancer_keywords = [
         "gastroesophageal junction adenocarcinoma",
         "gastroesophageal junction carcinoma",
         "stomach adenocarcinoma",
-        "stomach carcinoma",
+        # "stomach carcinoma", duplicate
         "stomach tumor",
         "stomach tumour",
         "stomach Cancer",
@@ -1276,7 +1259,7 @@ cancer_keywords = [
         "gastric tumor",
         "gastric tumour",
         "gastric Cancer",
-        #GI cancer
+        # GI cancer
         "GI cancer",
         "gastrointestinal cancer",
         # Multiple myeloma
@@ -1288,7 +1271,7 @@ cancer_keywords = [
         "Kahler Disease",
         "Multiple-Myeloma",
         "plasmacytoma"
-         # general cancer terms
+        # general cancer terms
         "cancer",
         "carcinoma",
         "adenocarcinoma",
@@ -1298,7 +1281,6 @@ cancer_keywords = [
         "tumor",
         "tumour",
         "neoplasm",
-        "tumour",
         "malignancy",
         "malignant",
         "cancerous",
