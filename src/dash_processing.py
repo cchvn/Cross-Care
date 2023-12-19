@@ -17,7 +17,7 @@ if not os.path.exists(plot_dir):
 
 # window sizes
 window_sizes = [10, 50, 100]
-demo_cat = ["gender", "racial"]  # Now includes 'racial'
+demo_cat = ["gender", "racial"]
 
 
 #### Helper functions ####

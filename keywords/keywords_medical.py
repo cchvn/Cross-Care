@@ -51,15 +51,6 @@ medical_keywords = [
         "Great Pox",
         "Treponema pallidum",
         "Syphilitic infection",
-        # Multiple myeloma
-        "Multiple Myeloma",
-        "Plasma-Cell Myeloma",
-        "Myelomatosis",
-        "Myelomatoses",
-        "Plasma Cell Myeloma",
-        "Kahler Disease",
-        "Multiple-Myeloma",
-        "plasmacytoma"
         # Hypertension
         "Hypertension",
         "High Blood Pressure",
