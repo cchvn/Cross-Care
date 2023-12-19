@@ -1,5 +1,5 @@
 data:
-  input_folder_path: 'Data/Arxiv/arxiv'
+  input_folder_path: '../Data/Arxiv/arxiv'
   output_folder_path: 'Data/Filtered/arxiv'
   metadata_keys: 
     - "timestamp"
