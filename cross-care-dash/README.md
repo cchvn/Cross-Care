@@ -19,6 +19,7 @@ python app/tables/data_sort.py
 
 
 ## TODO
+- Think about disease-drugs table as many to many
 - sort bar chart bugs
 - add diff plots
 - build out the rest of the dashboard as get more data

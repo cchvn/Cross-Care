@@ -8,17 +8,6 @@ sys.path.append("/home/wsl_legion/Cross-Care/")
 from dicts.dict_medical import medical_keywords_dict
 from dicts.dict_census_est import census_dict
 
-# paths
-count_dir = "output_arxiv"
-plot_dir = "plots/arxiv"
-
-if not os.path.exists(plot_dir):
-    os.makedirs(plot_dir)
-
-# window sizes
-window_sizes = [10, 50, 100]
-demo_cat = ["gender", "racial"]  # Now includes 'racial'
-
 
 #### Helper functions ####
 
@@ -148,6 +137,17 @@ def plot_percentage_difference(
 #### Main ####
 
 if __name__ == "__main__":
+    # paths
+    count_dir = "output_arxiv"
+    plot_dir = "plots/arxiv"
+
+    if not os.path.exists(plot_dir):
+        os.makedirs(plot_dir)
+
+    # window sizes
+    window_sizes = [10, 50, 100, 250]
+    demo_cat = ["gender", "racial"]
+
     # Plot total counts
     plot_total_counts(
         csv_path=f"{count_dir}/total_disease_counts.csv",
@@ -162,16 +162,28 @@ if __name__ == "__main__":
             filename = f"{count_dir}/window_{window_size}/co_occurrence_{demo}.csv"
 
             # read csv
-            df = pd.read_csv(filename)
-            df = df.rename(columns={"Unnamed: 0": "disease"})
-            df = replace_disease_codes(df, medical_keywords_dict)
+            df = pd.read_csv(
+                filename, skiprows=1, header=None, names=["disease", "gender", "count"]
+            )
+            pivot_df = df.pivot_table(
+                index="disease",
+                columns="gender",
+                values="count",
+                aggfunc="sum",
+                fill_value=0,
+            ).reset_index()
+            pivot_df.columns.name = None
+            pivot_df = pivot_df.rename(columns={"male": "male", "female": "female"})
+            pivot_df = pivot_df[["disease", "male", "female"]]
+            print(pivot_df.head())
+            pivot_df = replace_disease_codes(pivot_df, medical_keywords_dict)
 
             # Prepare the data for subgroup counts plot
             if demo == "gender":
                 groups = ["male", "female"]
                 census_demo_dict = census_dict["gender"]
             else:  # For 'racial'
-                groups = df.columns[1:]
+                groups = pivot_df.columns[1:]
                 census_demo_dict = census_dict["racial"]
 
             # Plot subgroup counts

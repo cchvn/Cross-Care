@@ -1,23 +1,32 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import {
-  BarChart,
   Card,
+  Tab,
+  TabList,
+  TabGroup,
+  Select,
+  SelectItem,
+  BarChart,
   Title,
   Subtitle,
-  Button,
-  TabGroup,
-  TabList,
-  Tab,
-  Select,
-  SelectItem
+  Button
 } from '@tremor/react';
 
 const DataCategories = {
-  TotalCounts: 'total_counts',
-  GenderCounts: 'window_10_gender_subgroup_counts',
-  RacialCounts: 'window_10_racial_subgroup_counts'
+  TotalCounts: 'total',
+  GenderCounts: 'gender',
+  RacialCounts: 'racial',
+  DrugCounts: 'drug' // need to think about this as many to many
+};
+
+const WindowOptions = {
+  Total: 'total',
+  Window10: 'window_10',
+  Window50: 'window_50',
+  Window100: 'window_100',
+  Window250: 'window_250'
 };
 
 const ChartPage = () => {
@@ -25,8 +34,9 @@ const ChartPage = () => {
     DataCategories.TotalCounts
   );
   const [sortKey, setSortKey] = useState('disease');
-  const [sortOrder, setSortOrder] = useState('asc');
-  const [chartData, setChartData] = useState([]);
+  const [sortOrder, setSortOrder] = useState('asc'); // Default sort order
+  const [dataToShow, setDataToShow] = useState([]);
+  const [selectedWindow, setSelectedWindow] = useState(WindowOptions.Total);
 
   const sortKeys = {
     [DataCategories.TotalCounts]: ['disease', '0'],
@@ -59,30 +69,57 @@ const ChartPage = () => {
     'Native American/Indigenous': 'native american/indigenous'
   };
 
-  useEffect(() => {
-    const fetchChartData = async () => {
-      try {
-        const response = await fetch(
-          `http://127.0.0.1:5000/get-chart-data?category=${selectedCategory}&sortKey=${sortKey}&sortOrder=${sortOrder}`
-        );
-        if (response.ok) {
-          const fetchedData = await response.json();
-          console.log(fetchedData);
-          setChartData(fetchedData); // Set transformed data
-          console.log(chartData);
-        } else {
-          console.error('Server error:', response.status);
-        }
-      } catch (error) {
-        console.error('Network error:', error);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10; // or any other number
+
+  // Function to fetch sorted data from the server
+  const fetchChartData = async () => {
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:5000/get-chart-data?category=${selectedCategory}&selectedWindow=${selectedWindow}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}`
+      );
+      if (response.ok) {
+        const fetchedData = await response.json();
+        setDataToShow(fetchedData); // Set transformed data
+        // console.log('Chart Data:', dataToShow); // Debugging line
+      } else {
+        console.error('Server error:', response.status);
       }
-    };
+    } catch (error) {
+      console.error('Network error:', error);
+    }
+  };
 
+  // Fetch data when sortKey, sortOrder, selectedCategory, or selectedWindow changes
+  useEffect(() => {
     fetchChartData();
-  }, [selectedCategory, sortKey, sortOrder]);
+  }, [selectedCategory, selectedWindow, sortKey, sortOrder, currentPage]);
 
+  const [additionalChartData, setAdditionalChartData] = useState([]);
+
+  const fetchAdditionalChartData = async () => {
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:5000/get-additional-chart-data?category=${selectedCategory}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}`
+      );
+      if (response.ok) {
+        const fetchedData = await response.json();
+        setAdditionalChartData(fetchedData);
+        console.log('Additional Chart Data:', additionalChartData);
+      } else {
+        console.error('Server error:', response.status);
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAdditionalChartData();
+  }, [selectedCategory, selectedWindow, sortKey, sortOrder, currentPage]);
+
+  // Determine display names based on selected category
   let displayNames = {};
-
   if (selectedCategory === DataCategories.TotalCounts) {
     displayNames = totalDisplayNames;
   } else if (selectedCategory === DataCategories.GenderCounts) {
@@ -91,10 +128,18 @@ const ChartPage = () => {
     displayNames = racialDisplayNames;
   }
 
+  // Render sort key dropdown options based on the current category
+  const renderSortKeyOptions = () => {
+    return Object.keys(displayNames).map((displayName) => (
+      <SelectItem key={displayName} value={displayNames[displayName]}>
+        {displayName}
+      </SelectItem>
+    ));
+  };
   // Determine the categories for the BarChart based on the selected category
   let chartCategories = [];
   if (selectedCategory === DataCategories.TotalCounts) {
-    chartCategories = ['Total Counts'];
+    chartCategories = ['0'];
   } else if (selectedCategory === DataCategories.GenderCounts) {
     chartCategories = ['male', 'female'];
   } else if (selectedCategory === DataCategories.RacialCounts) {
@@ -122,64 +167,132 @@ const ChartPage = () => {
   ];
 
   return (
-    <main className="p-4 md:p-10 mx-auto max-w-7xl">
-      <Card>
-        <TabGroup
-          index={Object.values(DataCategories).indexOf(selectedCategory)}
-          onIndexChange={(index) =>
-            setSelectedCategory(Object.values(DataCategories)[index])
-          }
-        >
-          <TabList className="mb-4" variant="line">
-            <Tab>Total Counts</Tab>
-            <Tab>Gender Counts</Tab>
-            <Tab>Racial Counts</Tab>
-          </TabList>
-        </TabGroup>
-        <Title>Dynamic Disease Data Visualization</Title>
-        <Subtitle>
-          Use the controls below to switch between different data
-          visualizations.
-        </Subtitle>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}
-        >
-          <Select
-            value={sortKey}
-            onValueChange={(selectedValue) => {
-              const actualKey = displayNames[selectedValue];
-              setSortKey(actualKey);
+    <section className="flex-col justify-center items-center space-y-6 pb-8 pt-6 md:pb-12 md:pt-10 lg:py-32">
+      <div className="flex flex-col items-center px-40">
+        <Card>
+          <TabGroup
+            index={Object.values(DataCategories).indexOf(selectedCategory)}
+            onIndexChange={(index) =>
+              setSelectedCategory(Object.values(DataCategories)[index])
+            }
+          >
+            <TabList className="mb-4" variant="line">
+              <Tab>Total Counts</Tab>
+              <Tab>Gender Counts</Tab>
+              <Tab>Racial Counts</Tab>
+            </TabList>
+          </TabGroup>
+          <Title>Dynamic Disease Data Visualization</Title>
+          <Subtitle>Counts per disease overall and for each subgroup.</Subtitle>
+
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flex: '70%'
             }}
-            style={{ width: '200px' }}
           >
-            {Object.keys(displayNames).map((displayName) => (
-              <SelectItem key={displayName} value={displayName}>
-                {displayName}
-              </SelectItem>
-            ))}
-          </Select>
-          <button
-            onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-            className="btn mt-4"
+            {/* Window Dropdown */}
+            <Select
+              value={selectedWindow}
+              onValueChange={setSelectedWindow}
+              style={{ flex: '40%' }}
+            >
+              {Object.entries(WindowOptions).map(([key, value]) => (
+                <SelectItem key={key} value={value}>
+                  {key}
+                </SelectItem>
+              ))}
+            </Select>
+
+            {/* Sort Key Dropdown */}
+            <Select
+              value={sortKey}
+              onValueChange={setSortKey}
+              style={{ flex: '40%', marginLeft: '20px' }}
+            >
+              {renderSortKeyOptions()}
+            </Select>
+
+            {/* Sort Order Button */}
+            <button
+              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+              className="btn mt4"
+              style={{ flex: '20%', marginLeft: '20px' }}
+            >
+              {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
+            </button>
+          </div>
+          <BarChart
+            className="mt-4 h-80"
+            data={dataToShow}
+            index="disease"
+            categories={chartCategories}
+            colors={chartColors}
+            stack={false} // Set to true for stacked bar chart
+            yAxisWidth={60}
+          />
+        </Card>
+      </div>
+      <div className="flex flex-col items-center px-40">
+        <Card>
+          <TabGroup
+            index={Object.values(DataCategories).indexOf(selectedCategory)}
+            onIndexChange={(index) =>
+              setSelectedCategory(Object.values(DataCategories)[index])
+            }
           >
-            {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
-          </button>
-        </div>
-        <BarChart
-          className="mt-4 h-80"
-          data={chartData}
-          index="Disease"
-          categories={chartCategories}
-          colors={chartColors}
-          stack={false} // Set to true for stacked bar chart
-          yAxisWidth={60}
-        />
-      </Card>
-    </main>
+            <TabList className="mb-4" variant="line">
+              <Tab>Total Counts</Tab>
+              <Tab>Gender Counts</Tab>
+              <Tab>Racial Counts</Tab>
+            </TabList>
+          </TabGroup>
+          <Title>Relative Representation</Title>
+          <Subtitle>
+            Percentage difference in counts compared to population census
+            estimates.
+          </Subtitle>
+
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flex: '70%'
+            }}
+          >
+            {/* Sort Key Dropdown */}
+            <Select
+              value={sortKey}
+              onValueChange={setSortKey}
+              style={{ flex: '40%', marginLeft: '20px' }}
+            >
+              {renderSortKeyOptions()}
+            </Select>
+
+            {/* Sort Order Button */}
+            <button
+              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+              className="btn mt4"
+              style={{ flex: '20%', marginLeft: '20px' }}
+            >
+              {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
+            </button>
+          </div>
+          <BarChart
+            className="mt-4 h-80"
+            data={additionalChartData}
+            index="disease"
+            categories={chartCategories}
+            colors={chartColors}
+            stack={false} // Set to true for stacked bar chart
+            yAxisWidth={60}
+          />
+        </Card>
+      </div>
+    </section>
   );
 };
 

@@ -8,17 +8,6 @@ sys.path.append("/home/wsl_legion/Cross-Care/")
 from dicts.dict_medical import medical_keywords_dict
 from dicts.dict_census_est import census_dict
 
-# paths
-count_dir = "output_arxiv"
-plot_dir = "plots/arxiv"
-
-if not os.path.exists(plot_dir):
-    os.makedirs(plot_dir)
-
-# window sizes
-window_sizes = [10, 50, 100]
-demo_cat = ["gender", "racial"]
-
 
 #### Helper functions ####
 # Code to Disease
@@ -41,20 +30,39 @@ def replace_disease_codes(df, medical_keywords_dict):
     return df
 
 
+# Write to JSON
+def write_to_json(data, filename):
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+    with open(filename, "w") as outfile:
+        json.dump(data, outfile)
+
+
 def calculate_percentage_deviation(df, group_columns, census_dict):
+    # Keep 'disease' column for reference
+    diseases = df["disease"]
+
     # Calculate the total counts
-    total_counts = df[group_columns].sum(axis=1).to_numpy()
+    total_counts = df[group_columns].sum(axis=1)
 
     # Prepare expected counts based on census percentages
     expected_counts = np.array(
         [total_counts * (census_dict[group] / 100) for group in group_columns]
     ).T
 
-    # Calculate percentage deviation
-    percentage_deviation = (
-        (df[group_columns].to_numpy() - expected_counts) / expected_counts
+    # Initialize percentage deviation array
+    percentage_deviation = np.zeros_like(expected_counts, dtype=float)
+
+    # Compute percentage deviation only for non-zero total counts
+    non_zero_mask = total_counts > 0
+    percentage_deviation[non_zero_mask] = (
+        (df[group_columns].to_numpy()[non_zero_mask] - expected_counts[non_zero_mask])
+        / expected_counts[non_zero_mask]
     ) * 100
-    return pd.DataFrame(percentage_deviation, columns=group_columns)
+
+    # Return DataFrame with 'disease' column included
+    percentage_deviation_df = pd.DataFrame(percentage_deviation, columns=group_columns)
+    percentage_deviation_df["disease"] = diseases.values
+    return percentage_deviation_df
 
 
 #### Data Processing Functions ####
@@ -65,78 +73,202 @@ def process_total_counts(csv_path, medical_keywords_dict):
     df = df.rename(columns={"Unnamed: 0": "disease"})
     df = replace_disease_codes(df, medical_keywords_dict)
     df = df.sort_values(by=df.columns[1], ascending=False)
-    df = df.head(20)
     return df.to_dict(orient="records")
 
 
-def process_subgroup_counts(csv_path, medical_keywords_dict, groups):
+def process_demo_counts(count_dir, medical_keywords_dict, demo_cat):
+    if demo_cat != "racial":  # BUG: with racial naming convention
+        csv_path = f"{count_dir}/disease_{demo_cat}_counts.csv"
+    else:
+        csv_path = f"{count_dir}/disease_race_counts.csv"
+
     df = pd.read_csv(csv_path)
     df = df.rename(columns={"Unnamed: 0": "disease"})
+
     df = replace_disease_codes(df, medical_keywords_dict)
-    df = df.head(20)
+    df = df.sort_values(by=df.columns[1], ascending=False)
     return df.to_dict(orient="records")
 
 
-def process_percentage_difference(csv_path, medical_keywords_dict, groups, census_dict):
+def process_temporal_counts(csv_path, medical_keywords_dict):
     df = pd.read_csv(csv_path)
-    df = df.rename(columns={"Unnamed: 0": "disease"})
+    df["timestamp"] = pd.to_datetime(df["timestamp"])
+
+    # Assuming all other columns except 'timestamp' are count data
+    count_columns = df.columns.drop("timestamp")
+
+    # Counts
+    monthly_counts = df.groupby(pd.Grouper(key="timestamp", freq="M"))[
+        count_columns
+    ].sum()
+    yearly_counts = df.groupby(pd.Grouper(key="timestamp", freq="Y"))[
+        count_columns
+    ].sum()
+
+    # For five-yearly counts, first calculate the 5-year intervals
+    df["five_year_interval"] = (df["timestamp"].dt.year // 5) * 5
+    five_yearly_counts = df.groupby("five_year_interval")[count_columns].sum()
+
+    # Pivot and process
+    def pivot_and_process(df_counts, freq):
+        df_counts = df_counts.T.reset_index()
+        df_counts.rename(columns={"index": "disease"}, inplace=True)
+        df_counts = replace_disease_codes(df_counts, medical_keywords_dict)
+        df_counts["freq"] = freq
+        return df_counts
+
+    # Pivoting each DataFrame
+    monthly_pivot = pivot_and_process(monthly_counts, "M")
+    yearly_pivot = pivot_and_process(yearly_counts, "Y")
+    five_yearly_pivot = pivot_and_process(five_yearly_counts, "5Y")
+
+    # Ensure all column headers are strings
+    monthly_pivot.columns = monthly_pivot.columns.astype(str)
+    yearly_pivot.columns = yearly_pivot.columns.astype(str)
+    five_yearly_pivot.columns = five_yearly_pivot.columns.astype(str)
+
+    # Convert to dictionaries
+    monthly_data = monthly_pivot.to_dict(orient="records")
+    yearly_data = yearly_pivot.to_dict(orient="records")
+    five_yearly_data = five_yearly_pivot.to_dict(orient="records")
+
+    # Combine all data into a single dictionary
+    all_data = {
+        "monthly": monthly_data,
+        "yearly": yearly_data,
+        "five_yearly": five_yearly_data,
+    }
+
+    return all_data
+
+
+# process subgroups
+def process_subgroup_counts(csv_path, medical_keywords_dict):
+    df = pd.read_csv(csv_path, names=["disease", "subgroup", "count"])
     df = replace_disease_codes(df, medical_keywords_dict)
-    df = df.head(20)
-    percentage_deviation_df = calculate_percentage_deviation(df, groups, census_dict)
-    return percentage_deviation_df.to_dict(orient="records")
+    pivoted_df = df.pivot_table(
+        index="disease", columns="subgroup", values="count", aggfunc="sum", fill_value=0
+    )
+    pivoted_df = pivoted_df.reset_index()
+    pivoted_dict = pivoted_df.to_dict(orient="records")
+    return pivoted_dict
+
+
+def process_percentage_difference(out_dir, demo_cat, census_dict):
+    # Prepare the data for subgroup counts
+    if demo_cat == "gender":
+        groups = ["male", "female"]
+        census_demo_dict = census_dict["gender"]
+    else:
+        groups = [
+            "white/caucasian",
+            "black/african american",
+            "native american/indigenous",
+            "asian",
+            "pacific islander",
+            "hispanic/latino",
+        ]
+        census_demo_dict = census_dict["racial"]
+
+    # read in json file
+    json_path = out_dir + f"/total_{demo_cat}_counts.json"
+    with open(json_path) as f:
+        total_counts = json.load(f)
+
+    # convert to dataframe
+    df = pd.DataFrame(total_counts)
+    print(df.head())
+
+    # Calculate percentage deviation
+    percentage_deviation_df = calculate_percentage_deviation(
+        df, groups, census_demo_dict
+    )
+    print(percentage_deviation_df.head())
+
+    # Reset index if necessary
+    percentage_deviation_df = percentage_deviation_df.reset_index(drop=True)
+    print(percentage_deviation_df.head())
+
+    # Convert to dictionary for output
+    deviation_dict = percentage_deviation_df.to_dict(orient="records")
+    return deviation_dict
 
 
 #### Main ####
 
 if __name__ == "__main__":
+    # paths
+    count_dir = "output_arxiv"
+    out_dir = "cross-care-dash/app/data"
+
+    # window sizes
+    window_sizes = [10, 50, 100, 250]
+    demo_cat = ["gender", "racial", "drug"]
+
+    #### TOTAL COUNTS ####
+
     # Process total counts
     total_counts_data = process_total_counts(
         csv_path=f"{count_dir}/total_disease_counts.csv",
         medical_keywords_dict=medical_keywords_dict,
     )
+    write_to_json(total_counts_data, f"{out_dir}/total_counts.json")
 
-    output_data = {"total_counts": total_counts_data}
-    print(output_data)
+    # Process demographic co-occurrence counts
+    total_counts_dict = (
+        {}
+    )  # Dictionary to store the counts for each demographic category
+
+    for demo in demo_cat:
+        total_counts_dict[demo] = process_demo_counts(
+            count_dir=count_dir,
+            medical_keywords_dict=medical_keywords_dict,
+            demo_cat=demo,
+        )
+        write_to_json(total_counts_dict[demo], f"{out_dir}/total_{demo}_counts.json")
+
+    # Process date co-occurrence counts
+    total_dates_data = process_temporal_counts(
+        csv_path=f"{count_dir}/disease_date_counts.csv",
+        medical_keywords_dict=medical_keywords_dict,
+    )
+    write_to_json(total_dates_data["monthly"], f"{out_dir}/monthly_counts.json")
+    write_to_json(total_dates_data["yearly"], f"{out_dir}/yearly_counts.json")
+    write_to_json(
+        total_dates_data["five_yearly"],
+        f"{out_dir}/five_yearly_counts.json",
+    )
+
+    # #### SUBGROUP COUNTS ####
+
+    # Process subgroup counts and percentage difference
+    window_subgroup_dict = {}
 
     for window_size in window_sizes:
         for demo in demo_cat:
             filename = f"{count_dir}/window_{window_size}/co_occurrence_{demo}.csv"
 
-            # read csv
-            df = pd.read_csv(filename)
-            df = df.rename(columns={"Unnamed: 0": "disease"})
-            df = replace_disease_codes(df, medical_keywords_dict)
-
-            # Prepare the data for subgroup counts
-            if demo == "gender":
-                groups = ["male", "female"]
-                census_demo_dict = census_dict["gender"]
-            else:  # For 'racial'
-                groups = df.columns[1:]
-                census_demo_dict = census_dict["racial"]
-
             # Process subgroup counts
             subgroup_counts_data = process_subgroup_counts(
-                csv_path=filename,
-                medical_keywords_dict=medical_keywords_dict,
-                groups=groups,
+                csv_path=filename, medical_keywords_dict=medical_keywords_dict
             )
 
-            # Process percentage difference
-            percentage_difference_data = process_percentage_difference(
-                csv_path=filename,
-                medical_keywords_dict=medical_keywords_dict,
-                groups=groups,
-                census_dict=census_demo_dict,
+            write_to_json(
+                subgroup_counts_data,
+                f"{out_dir}/window_{window_size}_{demo}_counts.json",
             )
 
-            output_data[
-                f"window_{window_size}_{demo}_subgroup_counts"
-            ] = subgroup_counts_data
-            output_data[
-                f"window_{window_size}_{demo}_percentage_difference"
-            ] = percentage_difference_data
+    #### PERCENTAGE DIFFERENCE ####
 
-    # Output the data as JSON
-    with open("output_arxiv/processed_data.json", "w") as outfile:
-        json.dump(output_data, outfile)
+    for demo in demo_cat[:2]:
+        percentage_difference_data = process_percentage_difference(
+            out_dir=out_dir,
+            demo_cat=demo,
+            census_dict=census_dict,
+        )
+        write_to_json(
+            percentage_difference_data,
+            f"{out_dir}/percentage_difference_{demo}.json",
+        )
+
+    print("Done!")

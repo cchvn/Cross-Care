@@ -9,13 +9,6 @@ CORS(app)  # Enable CORS for all routes
 # Get the directory where this script is located
 current_directory = os.path.dirname(os.path.abspath(__file__))
 
-# Construct the path to the data file
-data_file_path = os.path.join(current_directory, "../data/processed_data.json")
-
-# Load your data
-with open(data_file_path, "r") as file:
-    jsonData = json.load(file)
-
 
 # Function to sort data
 def sort_data(data, sort_key, sort_order):
@@ -35,17 +28,25 @@ def sort_data(data, sort_key, sort_order):
 
 @app.route("/get-sorted-data", methods=["GET"])
 def get_sorted_data():
-    category = request.args.get("category", "total_counts")
+    category = request.args.get("category", "total")
+    selectedWindow = request.args.get("selectedWindow", "total")
     sort_key = request.args.get("sortKey", "disease")
-    sort_order = request.args.get(
-        "sortOrder", "asc"
-    )  # Default to ascending if not provided
+    sort_order = request.args.get("sortOrder", "asc")
 
-    # Extract data based on category
-    extracted_data = jsonData[category]
+    # Construct the path to the correct data file based on category
+    if category == "total":
+        data_file_path = os.path.join(current_directory, f"../data/total_counts.json")
+    else:
+        data_file_path = os.path.join(
+            current_directory, f"../data/{selectedWindow}_{category}_counts.json"
+        )
+
+    # Load the data from the correct file
+    with open(data_file_path, "r") as file:
+        category_data = json.load(file)
 
     # Sort data
-    sorted_data = sort_data(extracted_data, sort_key, sort_order)
+    sorted_data = sort_data(category_data, sort_key, sort_order)
 
     # Pagination parameters
     page = int(request.args.get("page", 1))
@@ -59,35 +60,71 @@ def get_sorted_data():
     return jsonify(paginated_data)
 
 
-def transform_for_chart(data, category):
+def transform_total_counts_for_chart(data):
     chart_data = []
-    if category == "total_counts":
-        for item in data:
-            transformed_item = {"Disease": item["disease"], "Total Counts": item["0"]}
-            chart_data.append(transformed_item)
-    elif category in [
-        "window_10_gender_subgroup_counts",
-        "window_10_racial_subgroup_counts",
-    ]:
-        for item in data:
-            transformed_item = {"Disease": item["disease"]}
-            for key, value in item.items():
-                if key != "disease":
-                    transformed_item[key.replace("/", " ")] = value
+    for item in data:
+        # Ensure 'disease' and '0' keys exist
+        if "disease" in item and "0" in item:
+            transformed_item = {"Disease": item["disease"], "Count": item["0"]}
             chart_data.append(transformed_item)
     return chart_data
 
 
 @app.route("/get-chart-data", methods=["GET"])
 def get_chart_data():
-    category = request.args.get("category", "total_counts")
+    category = request.args.get("category", "total")
+    selectedWindow = request.args.get("selectedWindow", "total")
     sort_key = request.args.get("sortKey", "disease")
     sort_order = request.args.get("sortOrder", "asc")
 
-    extracted_data = jsonData[category]
-    sorted_data = sort_data(extracted_data, sort_key, sort_order)
-    chart_data = transform_for_chart(sorted_data, category)
-    return jsonify(chart_data)
+    # Construct the path to the correct data file based on category
+    if category == "total":
+        data_file_path = os.path.join(current_directory, f"../data/total_counts.json")
+    else:
+        data_file_path = os.path.join(
+            current_directory, f"../data/{selectedWindow}_{category}_counts.json"
+        )
+
+    # Load the data from the correct file
+    with open(data_file_path, "r") as file:
+        category_data = json.load(file)
+
+    # Sort data
+    sorted_data = sort_data(category_data, sort_key, sort_order)
+
+    if category == "total_counts":
+        sorted_data = transform_total_counts_for_chart(sorted_data)
+
+    return sorted_data
+
+
+@app.route("/get-additional-chart-data", methods=["GET"])
+def get_additional_chart_data():
+    try:
+        category = request.args.get("category", "racial")
+        sort_key = request.args.get("sortKey", "disease")
+        sort_order = request.args.get("sortOrder", "asc")
+
+        # Construct the path to the correct data file based on category
+        if category == "total":
+            additonal_data_path = os.path.join(
+                current_directory, f"../data/percentage_difference_gender.json"
+            )
+        else:
+            additonal_data_path = os.path.join(
+                current_directory, f"../data/percentage_difference_{category}.json"
+            )
+
+        with open(additonal_data_path, "r") as file:
+            additional_data = json.load(file)
+
+        # Sort data
+        additional_data = sort_data(additional_data, sort_key, sort_order)
+
+        return jsonify(additional_data)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":

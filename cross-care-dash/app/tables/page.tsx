@@ -17,9 +17,18 @@ import {
 } from '@tremor/react';
 
 const DataCategories = {
-  TotalCounts: 'total_counts',
-  GenderCounts: 'window_10_gender_subgroup_counts',
-  RacialCounts: 'window_10_racial_subgroup_counts'
+  TotalCounts: 'total',
+  GenderCounts: 'gender',
+  RacialCounts: 'racial',
+  DrugCounts: 'drug' // need to think about this as many to many
+};
+
+const WindowOptions = {
+  Total: 'total',
+  Window10: 'window_10',
+  Window50: 'window_50',
+  Window100: 'window_100',
+  Window250: 'window_250'
 };
 
 const TablePage = () => {
@@ -29,6 +38,7 @@ const TablePage = () => {
   const [sortKey, setSortKey] = useState('disease');
   const [sortOrder, setSortOrder] = useState('asc'); // Default sort order
   const [dataToShow, setDataToShow] = useState([]);
+  const [selectedWindow, setSelectedWindow] = useState(WindowOptions.Total);
 
   const sortKeys = {
     [DataCategories.TotalCounts]: ['disease', '0'],
@@ -68,7 +78,7 @@ const TablePage = () => {
   const fetchSortedData = async () => {
     try {
       const response = await fetch(
-        `http://127.0.0.1:5000/get-sorted-data?category=${selectedCategory}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}`
+        `http://127.0.0.1:5000/get-sorted-data?category=${selectedCategory}&selectedWindow=${selectedWindow}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}`
       );
       if (response.ok) {
         const sortedData = await response.json();
@@ -83,13 +93,13 @@ const TablePage = () => {
     }
   };
 
-  // Fetch data when sortKey, sortOrder, or selectedCategory changes
+  // Fetch data when sortKey, sortOrder, selectedCategory, or selectedWindow changes
   useEffect(() => {
     fetchSortedData();
-  }, [selectedCategory, sortKey, sortOrder, currentPage]);
+  }, [selectedCategory, selectedWindow, sortKey, sortOrder, currentPage]);
 
+  // Determine display names based on selected category
   let displayNames = {};
-
   if (selectedCategory === DataCategories.TotalCounts) {
     displayNames = totalDisplayNames;
   } else if (selectedCategory === DataCategories.GenderCounts) {
@@ -97,6 +107,15 @@ const TablePage = () => {
   } else if (selectedCategory === DataCategories.RacialCounts) {
     displayNames = racialDisplayNames;
   }
+
+  // Render sort key dropdown options based on the current category
+  const renderSortKeyOptions = () => {
+    return Object.keys(displayNames).map((displayName) => (
+      <SelectItem key={displayName} value={displayNames[displayName]}>
+        {displayName}
+      </SelectItem>
+    ));
+  };
 
   return (
     <section className="flex-col justify-center items-center space-y-6 pb-8 pt-6 md:pb-12 md:pt-10 lg:py-32">
@@ -123,24 +142,33 @@ const TablePage = () => {
               flex: '70%'
             }}
           >
+            {/* Window Dropdown */}
             <Select
-              value={sortKey}
-              onValueChange={(selectedValue) => {
-                const actualKey = displayNames[selectedValue];
-                setSortKey(actualKey);
-              }}
-              style={{ flex: '80%' }}
+              value={selectedWindow}
+              onValueChange={setSelectedWindow}
+              style={{ flex: '40%' }}
             >
-              {Object.keys(displayNames).map((displayName) => (
-                <SelectItem key={displayName} value={displayName}>
-                  {displayName}
+              {Object.entries(WindowOptions).map(([key, value]) => (
+                <SelectItem key={key} value={value}>
+                  {key}
                 </SelectItem>
               ))}
-            </Select>{' '}
+            </Select>
+
+            {/* Sort Key Dropdown */}
+            <Select
+              value={sortKey}
+              onValueChange={setSortKey}
+              style={{ flex: '40%', marginLeft: '20px' }}
+            >
+              {renderSortKeyOptions()}
+            </Select>
+
+            {/* Sort Order Button */}
             <button
               onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-              className={`${'btn'} ${'mt4'}`} /* Apply btn and mt4 class */
-              style={{ flex: '20%' }}
+              className="btn mt4"
+              style={{ flex: '20%', marginLeft: '20px' }}
             >
               {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
             </button>
