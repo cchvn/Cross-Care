@@ -68,5 +68,15 @@ gender_keywords = [
         "sistas",
         "Miss",
         "Ms",
+        "queer",
+        "nonbinary",
+        "non-binary",
+        "gay",
+        "lesbian",
+        "homosexual", 
+        "bisexual", 
+        "transsexual", 
+        "pansexual", 
+        "polysexual"
     ]
 ]

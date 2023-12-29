@@ -30,7 +30,7 @@ racial_keywords_dict = {
         "Alaskan-Natives", "Alaska-Natives"
     ],
     "Pacific Islander": [
-        "Pacific Islander", "Hawaiian", "Pacific-Islander", "Native Hawaiin",
+        "Pacific Islander", "Hawaiian", "Pacific-Islander", "Native Hawaiian",
         "Pacific Islanders", "Hawaiians", "Pacific-Islanders"
     ]
 }

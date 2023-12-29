@@ -28,6 +28,6 @@ racial_keywords = [word.lower() for word in [
     "Native-Americans", "American-Indians", "Alaskan-Natives", "Alaska-Natives",
 
     # Pacific Islander
-    "Pacific Islander", "Hawaiian", "Pacific-Islander", "Native Hawaiin",
+    "Pacific Islander", "Hawaiian", "Pacific-Islander", "Native Hawaiian",
     "Pacific Islanders", "Hawaiians", "Pacific-Islanders"
 ]]

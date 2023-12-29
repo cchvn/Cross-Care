@@ -81,6 +81,8 @@ def main(config_name):
         total_texts_filename=total_texts_filename,
     )
 
+    print("data_filtering_complete")
+
     ##### Medical keywords #####
 
     # # # Run co-occurrence analysis
