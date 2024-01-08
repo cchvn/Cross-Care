@@ -18,7 +18,8 @@ const DataCategories = {
   TotalCounts: 'total',
   GenderCounts: 'gender',
   RacialCounts: 'racial',
-  DrugCounts: 'drug' // need to think about this as many to many
+  DrugCounts: 'drug', // need to think about this as many to many
+  TimeCounts: 'time'
 };
 
 const WindowOptions = {
@@ -29,14 +30,21 @@ const WindowOptions = {
   Window250: 'window_250'
 };
 
+const TimeOptions = {
+  Monthly: 'monthly',
+  Yearly: 'yearly',
+  Five_Yearly: 'five_yearly'
+};
+
 const ChartPage = () => {
   const [selectedCategory, setSelectedCategory] = useState(
     DataCategories.TotalCounts
   );
   const [sortKey, setSortKey] = useState('disease');
-  const [sortOrder, setSortOrder] = useState('asc'); // Default sort order
+  const [sortOrder, setSortOrder] = useState('asc');
   const [dataToShow, setDataToShow] = useState([]);
   const [selectedWindow, setSelectedWindow] = useState(WindowOptions.Total);
+  const [selectedTime, setTime] = useState(TimeOptions.Monthly);
 
   const sortKeys = {
     [DataCategories.TotalCounts]: ['disease', '0'],
@@ -51,6 +59,7 @@ const ChartPage = () => {
       'native american/indigenous'
     ]
   };
+
   const totalDisplayNames = {
     Disease: 'disease',
     Count: '0'
@@ -93,7 +102,7 @@ const ChartPage = () => {
   // Fetch data when sortKey, sortOrder, selectedCategory, or selectedWindow changes
   useEffect(() => {
     fetchChartData();
-  }, [selectedCategory, selectedWindow, sortKey, sortOrder, currentPage]);
+  }, [selectedCategory, sortKey, sortOrder, currentPage]);
 
   const [additionalChartData, setAdditionalChartData] = useState([]);
 
@@ -113,10 +122,32 @@ const ChartPage = () => {
       console.error('Network error:', error);
     }
   };
-
   useEffect(() => {
     fetchAdditionalChartData();
-  }, [selectedCategory, selectedWindow, sortKey, sortOrder, currentPage]);
+  }, [selectedCategory, selectedTime, sortKey, sortOrder, currentPage]);
+
+  const [temporalChartData, setTemporalChartData] = useState([]);
+
+  const fetchTemporalChartData = async () => {
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:5000/get-temporal-chart-data?category=${selectedCategory}&timeOption=${selectedTimeOption}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}`
+      );
+      if (response.ok) {
+        const fetchedData = await response.json();
+        setTemporalChartData(fetchedData);
+        console.log('Temporal Chart Data:', temporalChartData);
+      } else {
+        console.error('Server error:', response.status);
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchTemporalChartData();
+  }, [selectedCategory, selectedTime, sortKey, sortOrder, currentPage]);
 
   // Determine display names based on selected category
   let displayNames = {};
@@ -290,6 +321,65 @@ const ChartPage = () => {
             stack={false} // Set to true for stacked bar chart
             yAxisWidth={60}
           />
+        </Card>
+      </div>
+      <div className="flex flex-col items-center px-40">
+        <Card>
+          <TabGroup
+            index={Object.values(DataCategories).indexOf(selectedCategory)}
+            onIndexChange={(index) =>
+              setSelectedCategory(Object.values(DataCategories)[index])
+            }
+          >
+            <TabList className="mb-4" variant="line">
+              <Tab>Total Counts</Tab>
+              <Tab>Gender Counts</Tab>
+              <Tab>Racial Counts</Tab>
+            </TabList>
+          </TabGroup>
+          <Title>Representation Trends</Title>
+          <Subtitle>Disease counts over time.</Subtitle>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flex: '70%'
+            }}
+          >
+            {/* Sort Key Dropdown */}
+            <Select
+              value={sortKey}
+              onValueChange={setSortKey}
+              style={{ flex: '40%', marginLeft: '20px' }}
+            >
+              {renderSortKeyOptions()}
+            </Select>
+
+            {/* Sort Order Button */}
+            <button
+              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+              className="btn mt4"
+              style={{ flex: '20%', marginLeft: '20px' }}
+            >
+              {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
+            </button>
+          </div>
+          <BarChart
+            className="mt-4 h-80"
+            data={
+              selectedTime === TimeOptions.Monthly
+                ? dataToShow
+                : selectedTime === TimeOptions.Yearly
+                  ? yearlyData
+                  : fiveYearlyData
+            }
+            index="disease"
+            categories={chartCategories}
+            colors={chartColors}
+            stack={false}
+            yAxisWidth={60}
+          />{' '}
         </Card>
       </div>
     </section>

@@ -127,5 +127,29 @@ def get_additional_chart_data():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route("/get-temporal-chart-data", methods=["GET"])
+def get_temporal_chart_data():
+    try:
+        category = request.args.get("category", "racial")
+        sort_key = request.args.get("sortKey", "disease")
+        sort_order = request.args.get("sortOrder", "asc")
+        TimeOption = request.args.get("timeOption", "total")
+
+        # Construct the path to the correct data file based on category
+        temporal_data_path = os.path.join(
+            current_directory, f"../data/{category}_{TimeOption}_counts.json"
+        )
+        with open(temporal_data_path, "r") as file:
+            temporal_data = json.load(file)
+
+        # Sort data
+        temporal_data = sort_data(temporal_data, sort_key, sort_order)
+
+        return jsonify(temporal_data)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
 if __name__ == "__main__":
     app.run(debug=True)
