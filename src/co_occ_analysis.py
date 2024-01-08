@@ -136,6 +136,45 @@ def calculate_disease_by_group(
     return result_gender_df, result_race_df, result_drug_df
 
 
+def calculate_subgroup_disease_counts_by_date(
+    df_output, medical_dict, gender_dict, racial_dict, drug_dict, grouping_column
+):
+    # Initialize DataFrames to store results
+    gender_counts_by_date = pd.DataFrame()
+    race_counts_by_date = pd.DataFrame()
+    drug_counts_by_date = pd.DataFrame()
+
+    # Group by date
+    for date, group_df in df_output.groupby(grouping_column):
+        # Calculate the co-occurrences for the subgroup within this date group
+        (
+            disease_gender_counts,
+            disease_race_counts,
+            disease_drug_counts,
+        ) = calculate_disease_by_group(
+            group_df, medical_dict, gender_dict, racial_dict, drug_dict
+        )
+
+        # Add the date information
+        disease_gender_counts[grouping_column] = date
+        disease_race_counts[grouping_column] = date
+        disease_drug_counts[grouping_column] = date
+
+        # Append the results
+        gender_counts_by_date = pd.concat(
+            [gender_counts_by_date, disease_gender_counts]
+        )
+        race_counts_by_date = pd.concat([race_counts_by_date, disease_race_counts])
+        drug_counts_by_date = pd.concat([drug_counts_by_date, disease_drug_counts])
+
+    # Reset index and return
+    return (
+        gender_counts_by_date.reset_index(),
+        race_counts_by_date.reset_index(),
+        drug_counts_by_date.reset_index(),
+    )
+
+
 def analyze_data_co_occurrence(
     source_name,
     data_path,
@@ -184,6 +223,20 @@ def analyze_data_co_occurrence(
     disease_gender_counts.to_csv(os.path.join(output_dir, "disease_gender_counts.csv"))
     disease_drug_counts.to_csv(os.path.join(output_dir, "disease_drug_counts.csv"))
 
+    # Disease Mention Counts for subgroups across time
+    (
+        gender_counts_by_date,
+        race_counts_by_date,
+        drug_counts_by_date,
+    ) = calculate_subgroup_disease_counts_by_date(
+        df_output, medical_dict, gender_dict, racial_dict, drug_dict, grouping_column
+    )
+
+    gender_counts_by_date.to_csv(os.path.join(output_dir, "gender_counts_by_date.csv"))
+    race_counts_by_date.to_csv(os.path.join(output_dir, "race_counts_by_date.csv"))
+    drug_counts_by_date.to_csv(os.path.join(output_dir, "drug_counts_by_date.csv"))
+
+    # Windows
     data = df_output["text"].tolist()
     window_sizes = [10, 50, 100, 250]
 
