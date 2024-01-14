@@ -1,6 +1,6 @@
 data:
   input_file_path: '../Data/Wikipedia/wikipedia/wiki_en.jsonl'
-  output_folder_path: '../Data/Filtered/Wikipedia'
+  output_folder_path: 'Data/Filtered/Wikipedia'
   metadata_keys: 
     - "title"
     - "url"

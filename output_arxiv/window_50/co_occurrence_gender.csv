@@ -35,6 +35,7 @@ covid-19,female,913
 61462000.0,male,113
 74732009.0,female,240
 69896004.0,male,98
+74732009.0,non-binary,19
 68566005.0,female,9
 50829006.0,female,69
 233604007.0,male,126
@@ -72,19 +73,26 @@ hiv/aids,female,69
 menstruation,female,23
 53741008.0,male,34
 53741008.0,female,29
+hiv/aids,non-binary,11
+covid-19,non-binary,25
 396275006.0,male,40
 3723001.0,female,46
 50829006.0,male,113
 10743008.0,female,69
 56925008.0,male,6
 3723001.0,male,36
+40733004.0,non-binary,31
 29384001.0,male,7
 37340000.0,female,4
 86044005.0,female,37
 200936003.0,female,37
+49049000.0,non-binary,2
+21134002.0,non-binary,38
 161712005.0,male,29
 syphilis,male,33
 syphilis,female,10
+195967001.0,non-binary,1
+233604007.0,non-binary,1
 24693007.0,female,2
 24693007.0,male,1
 60862001.0,male,5
@@ -108,13 +116,20 @@ ulcerative colitis,female,9
 hepatitis b,male,12
 56925008.0,female,2
 709044004.0,male,18
+tuberculoses,non-binary,2
 34840004.0,male,1
 34840004.0,female,1
 54150009.0,male,2
 54150009.0,female,3
 23502006.0,male,3
+161712005.0,non-binary,1
+hepatitis b,non-binary,1
 76376003.0,female,1
 crohn’s disease,female,1
+73211009.0,non-binary,4
+6471006.0,non-binary,14
+35489007.0,non-binary,11
+709044004.0,non-binary,1
 62315008.0,female,30
 59927004.0,male,12
 37340000.0,male,1
@@ -124,12 +139,11 @@ hepatitis b,female,13
 menstruation,male,7
 3545003.0,male,3
 43116000.0,female,8
-multiple myeloma,male,6
-multiple myeloma,female,4
 15188001.0,female,6
 3716002.0,female,2
 endocarditis,female,3
 32914008.0,male,1
+syphilis,non-binary,1
 14669001.0,male,4
 29384001.0,female,1
 75694006.0,male,4
@@ -137,14 +151,26 @@ endocarditis,female,3
 57182000.0,female,3
 7973008.0,male,1
 43116000.0,male,3
+69322001.0,non-binary,1
+32798002.0,non-binary,1
 34486009.0,female,1
+6142004.0,non-binary,4
+15188001.0,non-binary,2
 36971009.0,male,3
 36971009.0,female,1
+50829006.0,non-binary,1
 chagas disease,male,2
 takotsubo cardiomyopathy,male,1
 takotsubo cardiomyopathy,female,1
+200936003.0,non-binary,1
 3716002.0,male,1
 endocarditis,male,1
 sarcoidoses,male,1
+49601007.0,non-binary,1
+69896004.0,non-binary,1
 3545003.0,female,2
 40930008.0,female,2
+22298006.0,non-binary,2
+24700007.0,non-binary,1
+10743008.0,non-binary,1
+61462000.0,non-binary,3

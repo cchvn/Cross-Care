@@ -61,17 +61,6 @@ medical_keywords_dict = {
         "Treponema pallidum",
         "Syphilitic infection",
     ],
-    "Multiple Myeloma": [
-        # Multiple myeloma
-        "Multiple Myeloma",
-        "Plasma-Cell Myeloma",
-        "Myelomatosis",
-        "Myelomatoses",
-        "Plasma Cell Myeloma",
-        "Kahler Disease",
-        "Multiple-Myeloma",
-        "plasmacytoma",
-    ],
     "Hypertension": [
         # Hypertension
         "Hypertension",

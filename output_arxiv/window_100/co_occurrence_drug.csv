@@ -144,7 +144,6 @@ hypertension,atorvastatin,9
 52448006.0,insulin,17
 129103003.0,insulin,2
 74732009.0,fentanyl,4
-multiple myeloma,insulin,1
 hiv/aids,vaccines,16
 covid-19,fentanyl,6
 69322001.0,vaccines,1
@@ -322,7 +321,6 @@ hypertension,fentanyl,3
 32798002.0,insulin,5
 tuberculoses,heparin,1
 syphilis,heparin,1
-multiple myeloma,heparin,1
 49601007.0,nicotine,12
 161712005.0,bevacizumab,1
 24693007.0,atorvastatin,2
@@ -351,7 +349,6 @@ covid-19,acetaminophen,2
 35489007.0,oxycodone,4
 62315008.0,valsartan,1
 62315008.0,fenofibrate,1
-multiple myeloma,trastuzumab,1
 covid-19,tamiflu,4
 6142004.0,paracetamol,3
 32398004.0,tamiflu,2
@@ -608,8 +605,6 @@ hypertension,aripiprazole,1
 32798002.0,sitagliptin,1
 49049000.0,sitagliptin,1
 29384001.0,oseltamivir,1
-multiple myeloma,sildenafil,1
-multiple myeloma,viagra,1
 49601007.0,sildenafil,1
 49601007.0,viagra,1
 32914008.0,insulin,1
@@ -710,7 +705,6 @@ hypertension,oxycontin,1
 195967001.0,oxycontin,1
 195967001.0,nexium,1
 698247007.0,oxycontin,1
-multiple myeloma,denosumab,1
 6142004.0,heparin,1
 40733004.0,rabeprazole,1
 59927004.0,acetaminophen,1

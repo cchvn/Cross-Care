@@ -186,7 +186,6 @@ hypertension,atorvastatin,9
 61462000.0,insulin,9
 129103003.0,insulin,2
 74732009.0,fentanyl,5
-multiple myeloma,insulin,1
 62315008.0,nicotine,2
 covid-19,fentanyl,8
 69322001.0,vaccines,1
@@ -418,7 +417,6 @@ menstruation,insulin,1
 69896004.0,mometasone,1
 tuberculoses,heparin,1
 syphilis,heparin,1
-multiple myeloma,heparin,1
 49601007.0,nicotine,13
 hypertension,buprenorphine,2
 161712005.0,bevacizumab,1
@@ -459,7 +457,6 @@ tuberculoses,raltegravir,1
 52448006.0,oxycodone,2
 62315008.0,valsartan,2
 62315008.0,fenofibrate,1
-multiple myeloma,trastuzumab,1
 covid-19,tamiflu,5
 6142004.0,paracetamol,4
 32398004.0,tamiflu,2
@@ -794,8 +791,6 @@ hiv/aids,oxycodone,1
 32798002.0,sitagliptin,1
 49049000.0,sitagliptin,1
 29384001.0,oseltamivir,1
-multiple myeloma,sildenafil,1
-multiple myeloma,viagra,1
 49601007.0,sildenafil,1
 49601007.0,viagra,1
 32914008.0,insulin,1
@@ -928,7 +923,6 @@ hypertension,nexium,1
 698247007.0,lipitor,1
 698247007.0,levothyroxine,1
 698247007.0,atorvastatin,1
-multiple myeloma,denosumab,1
 6142004.0,heparin,1
 40733004.0,rabeprazole,1
 62315008.0,rabeprazole,1
@@ -1023,7 +1017,6 @@ endocarditis,aspirin,1
 69896004.0,vaccines,1
 covid-19,glatiramer,1
 40733004.0,glatiramer,1
-multiple myeloma,nicotine,1
 396275006.0,nicotine,1
 32398004.0,nicotine,1
 35489007.0,ritalin,2

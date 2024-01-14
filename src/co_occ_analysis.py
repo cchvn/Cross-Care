@@ -39,7 +39,10 @@ def find_co_occurrences(
                 )
             ]
             context_str = " ".join(context_words)
-
+           
+            if med_key== "multiple myeloma":
+                    print(text)
+            
             for category, patterns in [
                 ("racial", racial_patterns),
                 ("gender", gender_patterns),
@@ -48,7 +51,7 @@ def find_co_occurrences(
                 for key, pattern in patterns.items():
                     for _ in pattern.finditer(context_str):
                         co_occurrences[category][(med_key, key)] += 1
-
+                        
     return co_occurrences
 
 
@@ -136,43 +139,40 @@ def calculate_disease_by_group(
     return result_gender_df, result_race_df, result_drug_df
 
 
-def calculate_subgroup_disease_counts_by_date(
-    df_output, medical_dict, gender_dict, racial_dict, drug_dict, grouping_column
-):
+def process_date_group(args):
+    date, group_df, medical_dict, gender_dict, racial_dict, drug_dict = args
+    return date, calculate_disease_by_group(group_df, medical_dict, gender_dict, racial_dict, drug_dict)
+
+def calculate_subgroup_disease_counts_by_date_parallel(df_output, medical_dict, gender_dict, racial_dict, drug_dict, grouping_column):
     # Initialize DataFrames to store results
     gender_counts_by_date = pd.DataFrame()
     race_counts_by_date = pd.DataFrame()
     drug_counts_by_date = pd.DataFrame()
 
-    # Group by date
-    for date, group_df in df_output.groupby(grouping_column):
-        # Calculate the co-occurrences for the subgroup within this date group
-        (
-            disease_gender_counts,
-            disease_race_counts,
-            disease_drug_counts,
-        ) = calculate_disease_by_group(
-            group_df, medical_dict, gender_dict, racial_dict, drug_dict
-        )
+    # Prepare the data for multiprocessing
+    group_data = [
+        (date, group, medical_dict, gender_dict, racial_dict, drug_dict)
+        for date, group in df_output.groupby(grouping_column)
+    ]
 
+    # Use multiprocessing Pool to process groups in parallel
+    with Pool(cpu_count()) as pool:
+        results = pool.map(process_date_group, group_data)
+
+    # Process the results
+    for date, (disease_gender_counts, disease_race_counts, disease_drug_counts) in results:
         # Add the date information
         disease_gender_counts[grouping_column] = date
         disease_race_counts[grouping_column] = date
         disease_drug_counts[grouping_column] = date
 
         # Append the results
-        gender_counts_by_date = pd.concat(
-            [gender_counts_by_date, disease_gender_counts]
-        )
+        gender_counts_by_date = pd.concat([gender_counts_by_date, disease_gender_counts])
         race_counts_by_date = pd.concat([race_counts_by_date, disease_race_counts])
         drug_counts_by_date = pd.concat([drug_counts_by_date, disease_drug_counts])
 
     # Reset index and return
-    return (
-        gender_counts_by_date.reset_index(),
-        race_counts_by_date.reset_index(),
-        drug_counts_by_date.reset_index(),
-    )
+    return gender_counts_by_date.reset_index(), race_counts_by_date.reset_index(), drug_counts_by_date.reset_index()
 
 
 def analyze_data_co_occurrence(
@@ -223,18 +223,18 @@ def analyze_data_co_occurrence(
     disease_gender_counts.to_csv(os.path.join(output_dir, "disease_gender_counts.csv"))
     disease_drug_counts.to_csv(os.path.join(output_dir, "disease_drug_counts.csv"))
 
-    # Disease Mention Counts for subgroups across time
-    (
-        gender_counts_by_date,
-        race_counts_by_date,
-        drug_counts_by_date,
-    ) = calculate_subgroup_disease_counts_by_date(
-        df_output, medical_dict, gender_dict, racial_dict, drug_dict, grouping_column
-    )
+#     # Disease Mention Counts for subgroups across time
+#     (
+#         gender_counts_by_date,
+#         race_counts_by_date,
+#         drug_counts_by_date,
+#     ) = calculate_subgroup_disease_counts_by_date_parallel(
+#         df_output, medical_dict, gender_dict, racial_dict, drug_dict, grouping_column
+#     )
 
-    gender_counts_by_date.to_csv(os.path.join(output_dir, "gender_counts_by_date.csv"))
-    race_counts_by_date.to_csv(os.path.join(output_dir, "race_counts_by_date.csv"))
-    drug_counts_by_date.to_csv(os.path.join(output_dir, "drug_counts_by_date.csv"))
+#     gender_counts_by_date.to_csv(os.path.join(output_dir, "gender_counts_by_date.csv"))
+#     race_counts_by_date.to_csv(os.path.join(output_dir, "race_counts_by_date.csv"))
+#     drug_counts_by_date.to_csv(os.path.join(output_dir, "drug_counts_by_date.csv"))
 
     # Windows
     data = df_output["text"].tolist()

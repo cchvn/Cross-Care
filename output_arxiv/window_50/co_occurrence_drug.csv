@@ -107,7 +107,6 @@ covid-19,atorvastatin,1
 161712005.0,ibuprofen,2
 161712005.0,aspirin,1
 hypertension,insulin,41
-multiple myeloma,insulin,1
 covid-19,fentanyl,5
 3545003.0,fenofibrate,1
 698247007.0,fenofibrate,1
@@ -247,7 +246,6 @@ hypertension,fentanyl,2
 698247007.0,metoprolol,2
 tuberculoses,heparin,1
 syphilis,heparin,1
-multiple myeloma,heparin,1
 3723001.0,heparin,2
 22298006.0,heparin,2
 69896004.0,heparin,1
@@ -462,8 +460,6 @@ hypertension,fenofibrate,2
 43116000.0,capecitabine,1
 49049000.0,sitagliptin,1
 35489007.0,viagra,2
-multiple myeloma,sildenafil,1
-multiple myeloma,viagra,1
 49601007.0,sildenafil,1
 49601007.0,viagra,1
 hypertension,esomeprazole,1
@@ -523,7 +519,6 @@ hypertension,levothyroxine,1
 195967001.0,atorvastatin,1
 698247007.0,oxycontin,1
 hepatitis b,aspirin,1
-multiple myeloma,denosumab,1
 40733004.0,rabeprazole,1
 56925008.0,insulin,2
 396275006.0,duloxetine,1

@@ -48,7 +48,9 @@ hiv/aids,male,37
 49049000.0,female,39
 53741008.0,male,9
 hiv/aids,female,27
+hiv/aids,non-binary,7
 59927004.0,female,4
+40733004.0,non-binary,16
 29384001.0,male,3
 22298006.0,male,83
 32398004.0,female,6
@@ -58,6 +60,8 @@ hiv/aids,female,27
 200936003.0,female,12
 3723001.0,female,19
 698247007.0,male,35
+covid-19,non-binary,7
+21134002.0,non-binary,14
 22298006.0,female,55
 86044005.0,male,32
 44054006.0,male,9
@@ -86,8 +90,12 @@ syphilis,male,16
 34840004.0,female,1
 13746004.0,female,5
 200936003.0,male,13
+hepatitis b,non-binary,1
 menstruation,female,14
 crohn’s disease,female,1
+6471006.0,non-binary,6
+35489007.0,non-binary,7
+74732009.0,non-binary,5
 11381005.0,male,4
 hepatitis b,female,5
 ulcerative colitis,female,5
@@ -99,23 +107,26 @@ hepatitis b,male,2
 14669001.0,female,1
 29384001.0,female,1
 75694006.0,male,2
+73211009.0,non-binary,3
 62315008.0,female,10
 menstruation,male,3
-multiple myeloma,female,2
 24693007.0,female,1
 59927004.0,male,1
 709044004.0,male,4
 34486009.0,female,1
+6142004.0,non-binary,1
 syphilis,female,2
 129103003.0,male,2
 15188001.0,female,2
 54150009.0,male,1
 54150009.0,female,1
-multiple myeloma,male,2
+200936003.0,non-binary,1
 75694006.0,female,1
 3545003.0,female,2
 36971009.0,male,1
 56317004.0,male,1
+22298006.0,non-binary,2
 60862001.0,male,1
 43116000.0,female,1
 39621005.0,male,1
+61462000.0,non-binary,1
