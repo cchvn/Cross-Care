@@ -13,7 +13,9 @@ import {
   TabList,
   TabGroup,
   Select,
-  SelectItem
+  SelectItem,
+  MultiSelect,
+  MultiSelectItem
 } from '@tremor/react';
 
 const DataCategories = {
@@ -39,6 +41,8 @@ const TablePage = () => {
   const [sortOrder, setSortOrder] = useState('asc'); // Default sort order
   const [dataToShow, setDataToShow] = useState([]);
   const [selectedWindow, setSelectedWindow] = useState(WindowOptions.Total);
+  const [selectedDiseases, setSelectedDiseases] = useState([]);
+  const [diseaseNames, setDiseaseNames] = useState([]);
 
   const sortKeys = {
     [DataCategories.TotalCounts]: ['disease', '0'],
@@ -74,17 +78,35 @@ const TablePage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10; // or any other number
 
+  const fetchDiseaseNames = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:5000/get-disease-names');
+      if (response.ok) {
+        const names = await response.json();
+        console.log('Disease Names:', names); // Logging the names
+        setDiseaseNames(names);
+      } else {
+        console.error('Server error:', response.status);
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+    }
+  };
+  useEffect(() => {
+    fetchDiseaseNames();
+  }, []); // Empty dependency array to run only on component mount
+
   // Function to fetch sorted data from the server
   const fetchSortedData = async () => {
+    const selectedDiseasesString = selectedDiseases.join(',');
     try {
       const response = await fetch(
-        `http://127.0.0.1:5000/get-sorted-data?category=${selectedCategory}&selectedWindow=${selectedWindow}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}`
+        `http://127.0.0.1:5000/get-sorted-data?category=${selectedCategory}&selectedWindow=${selectedWindow}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}&selectedDiseases=${selectedDiseasesString}`
       );
       if (response.ok) {
         const sortedData = await response.json();
-        console.log('Fetched Data:', sortedData); // Debugging line
+        console.log('Fetched Data:', sortedData);
         setDataToShow(sortedData);
-        console.log('Updated State:', dataToShow); // To see the updated state
       } else {
         console.error('Server error:', response.status);
       }
@@ -93,11 +115,16 @@ const TablePage = () => {
     }
   };
 
-  // Fetch data when sortKey, sortOrder, selectedCategory, or selectedWindow changes
   useEffect(() => {
     fetchSortedData();
-  }, [selectedCategory, selectedWindow, sortKey, sortOrder, currentPage]);
-
+  }, [
+    selectedCategory,
+    selectedWindow,
+    sortKey,
+    sortOrder,
+    currentPage,
+    selectedDiseases
+  ]);
   // Determine display names based on selected category
   let displayNames = {};
   if (selectedCategory === DataCategories.TotalCounts) {
@@ -142,11 +169,24 @@ const TablePage = () => {
               flex: '70%'
             }}
           >
+            {/* Disease Multiselect */}
+            <MultiSelect
+              onValueChange={setSelectedDiseases}
+              placeholder="Select Diseases"
+              style={{ flex: '30%' }}
+            >
+              {diseaseNames.map((disease) => (
+                <MultiSelectItem key={disease} value={disease}>
+                  {disease}
+                </MultiSelectItem>
+              ))}
+            </MultiSelect>
+
             {/* Window Dropdown */}
             <Select
               value={selectedWindow}
               onValueChange={setSelectedWindow}
-              style={{ flex: '40%' }}
+              style={{ flex: '20%' }}
             >
               {Object.entries(WindowOptions).map(([key, value]) => (
                 <SelectItem key={key} value={value}>
@@ -159,7 +199,7 @@ const TablePage = () => {
             <Select
               value={sortKey}
               onValueChange={setSortKey}
-              style={{ flex: '40%', marginLeft: '20px' }}
+              style={{ flex: '20%', marginLeft: '20px' }}
             >
               {renderSortKeyOptions()}
             </Select>
