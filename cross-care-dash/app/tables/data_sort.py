@@ -34,8 +34,7 @@ def get_sorted_data():
         selectedWindow = request.args.get("selectedWindow", "total")
         sort_key = request.args.get("sortKey", "disease")
         sort_order = request.args.get("sortOrder", "asc")
-
-        selectedDisease = request.args.get("selectedDisease", "pneumonia,acne,asthma")
+        selectedDiseases = request.args.get("selectedDiseases", None)
 
         # Construct the path to the correct data file based on category
         if category == "total":
@@ -58,8 +57,8 @@ def get_sorted_data():
         print(sorted_data)
 
         # Filter data by selected disease
-        if selectedDisease:
-            sorted_data = filter_by_disease(sorted_data, selectedDisease)
+        if selectedDiseases:
+            sorted_data = filter_by_disease(sorted_data, selectedDiseases)
             logging.debug(f"Filtered Data: {sorted_data}")
 
         # Pagination parameters
@@ -89,22 +88,24 @@ def transform_total_counts_for_chart(data):
 
 def filter_by_disease(sorted_data, selectedDiseases):
     try:
-        # Convert selected diseases to a set for efficient lookup and normalize the case
-        selectedDiseasesSet = set(disease.strip().lower() for disease in selectedDiseases.split(","))
+        # Remove spaces and convert to lowercase for each disease in the selectedDiseases list
+        selectedDiseasesSet = set(
+            disease.replace(" ", "").lower() for disease in selectedDiseases.split(",")
+        )
 
         # Define a lambda function for filtering
-        filter_func = lambda item: item.get("disease", "").lower() in selectedDiseasesSet
+        filter_func = (
+            lambda item: item.get("disease", "").replace(" ", "").lower()
+            in selectedDiseasesSet
+        )
 
         # Use the filter function with the lambda to filter the data
         filtered_data = list(filter(filter_func, sorted_data))
-
-        logging.debug(f"Filtered Data: {filtered_data}")
         return filtered_data
     except Exception as e:
         logging.error("An error occurred in filter_by_disease:", exc_info=True)
         # Decide whether to return the unfiltered data or an empty list in case of an error
         return []  # or return sorted_data if that's preferable
-
 
 
 def extract_disease_names(data_file_path):
@@ -125,46 +126,52 @@ def get_disease_names():
 
 @app.route("/get-chart-data", methods=["GET"])
 def get_chart_data():
-    category = request.args.get("category", "total")
-    selectedWindow = request.args.get("selectedWindow", "total")
-    sort_key = request.args.get("sortKey", "disease")
-    sort_order = request.args.get("sortOrder", "asc")
-    selectedDiseases = request.args.get(
-        "selectedDiseases",
-        None,
-    )
+    try:
+        category = request.args.get("category", "total")
+        selectedWindow = request.args.get("selectedWindow", "total")
+        sort_key = request.args.get("sortKey", "disease")
+        sort_order = request.args.get("sortOrder", "asc")
+        selectedDiseases = request.args.get("selectedDiseases", None)
 
-    # Construct the path to the correct data file based on category
-    if category == "total":
-        data_file_path = os.path.join(current_directory, f"../data/total_counts.json")
-    else:
-        data_file_path = os.path.join(
-            current_directory, f"../data/{selectedWindow}_{category}_counts.json"
-        )
+        # Construct the path to the correct data file based on category
+        if category == "total":
+            data_file_path = os.path.join(
+                current_directory, f"../data/total_counts.json"
+            )
+        else:
+            data_file_path = os.path.join(
+                current_directory, f"../data/{selectedWindow}_{category}_counts.json"
+            )
 
-    # Load the data from the correct file
-    with open(data_file_path, "r") as file:
-        category_data = json.load(file)
+        # Load the data from the correct file
+        with open(data_file_path, "r") as file:
+            category_data = json.load(file)
 
-    # Sort data
-    sorted_data = sort_data(category_data, sort_key, sort_order)
+        # Sort data
+        sorted_data = sort_data(category_data, sort_key, sort_order)
 
-    if category == "total_counts":
-        sorted_data = transform_total_counts_for_chart(sorted_data)
+        # Transform data if necessary
+        if category == "total_counts":
+            sorted_data = transform_total_counts_for_chart(sorted_data)
 
-    # # Check if selectedDiseases is not None and not an empty string
-    # if selectedDiseases:
-    #     sorted_data = filter_by_disease(sorted_data, selectedDiseases)
+        # Filter data by selected disease
+        if selectedDiseases:
+            sorted_data = filter_by_disease(sorted_data, selectedDiseases)
 
-    return sorted_data
+        return jsonify(sorted_data)
+    except Exception as e:
+        logging.error("An error occurred in get_chart_data:", exc_info=True)
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/get-additional-chart-data", methods=["GET"])
 def get_additional_chart_data():
     try:
-        category = request.args.get("category", "racial")
+        category = request.args.get("category", "total")
+        selectedWindow = request.args.get("selectedWindow", "total")
         sort_key = request.args.get("sortKey", "disease")
         sort_order = request.args.get("sortOrder", "asc")
+        selectedDiseases = request.args.get("selectedDiseases", None)
 
         # Construct the path to the correct data file based on category
         if category == "total":
@@ -181,6 +188,10 @@ def get_additional_chart_data():
 
         # Sort data
         additional_data = sort_data(additional_data, sort_key, sort_order)
+
+        # Filter data by selected disease
+        if selectedDiseases:
+            additional_data = filter_by_disease(additional_data, selectedDiseases)
 
         return jsonify(additional_data)
     except Exception as e:

@@ -11,7 +11,11 @@ import {
   BarChart,
   Title,
   Subtitle,
-  Button
+  Button,
+  MultiSelect,
+  MultiSelectItem,
+  Switch,
+  LineChart
 } from '@tremor/react';
 
 const DataCategories = {
@@ -45,6 +49,8 @@ const ChartPage = () => {
   const [dataToShow, setDataToShow] = useState([]);
   const [selectedWindow, setSelectedWindow] = useState(WindowOptions.Total);
   const [selectedTime, setTime] = useState(TimeOptions.Monthly);
+  const [selectedDiseases, setSelectedDiseases] = useState([]);
+  const [diseaseNames, setDiseaseNames] = useState([]);
 
   const sortKeys = {
     [DataCategories.TotalCounts]: ['disease', '0'],
@@ -81,16 +87,34 @@ const ChartPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10; // or any other number
 
+  const fetchDiseaseNames = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:5000/get-disease-names');
+      if (response.ok) {
+        const names = await response.json();
+        console.log('Disease Names:', names); // Logging the names
+        setDiseaseNames(names);
+      } else {
+        console.error('Server error:', response.status);
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+    }
+  };
+  useEffect(() => {
+    fetchDiseaseNames();
+  }, []); // Empty dependency array to run only on component mount
+
   // Function to fetch sorted data from the server
   const fetchChartData = async () => {
+    const selectedDiseasesString = selectedDiseases.join(',');
     try {
       const response = await fetch(
-        `http://127.0.0.1:5000/get-chart-data?category=${selectedCategory}&selectedWindow=${selectedWindow}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}`
+        `http://127.0.0.1:5000/get-chart-data?category=${selectedCategory}&selectedWindow=${selectedWindow}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}&selectedDiseases=${selectedDiseasesString}`
       );
       if (response.ok) {
         const fetchedData = await response.json();
         setDataToShow(fetchedData); // Set transformed data
-        // console.log('Chart Data:', dataToShow); // Debugging line
       } else {
         console.error('Server error:', response.status);
       }
@@ -102,14 +126,22 @@ const ChartPage = () => {
   // Fetch data when sortKey, sortOrder, selectedCategory, or selectedWindow changes
   useEffect(() => {
     fetchChartData();
-  }, [selectedCategory, sortKey, sortOrder, currentPage]);
+  }, [
+    selectedCategory,
+    selectedWindow,
+    sortKey,
+    sortOrder,
+    currentPage,
+    selectedDiseases
+  ]);
 
   const [additionalChartData, setAdditionalChartData] = useState([]);
 
   const fetchAdditionalChartData = async () => {
+    const selectedDiseasesString = selectedDiseases.join(',');
     try {
       const response = await fetch(
-        `http://127.0.0.1:5000/get-additional-chart-data?category=${selectedCategory}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}`
+        `http://127.0.0.1:5000/get-additional-chart-data?category=${selectedCategory}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}&selectedDiseases=${selectedDiseasesString}`
       );
       if (response.ok) {
         const fetchedData = await response.json();
@@ -124,14 +156,15 @@ const ChartPage = () => {
   };
   useEffect(() => {
     fetchAdditionalChartData();
-  }, [selectedCategory, selectedTime, sortKey, sortOrder, currentPage]);
+  }, [selectedCategory, sortKey, sortOrder, currentPage, selectedDiseases]);
 
   const [temporalChartData, setTemporalChartData] = useState([]);
 
   const fetchTemporalChartData = async () => {
+    const selectedDiseasesString = selectedDiseases.join(',');
     try {
       const response = await fetch(
-        `http://127.0.0.1:5000/get-temporal-chart-data?category=${selectedCategory}&timeOption=${selectedTimeOption}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}`
+        `http://127.0.0.1:5000/get-temporal-chart-data?category=${selectedCategory}&timeOption=${selectedTime}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}&selectedDiseases=${selectedDiseasesString}`
       );
       if (response.ok) {
         const fetchedData = await response.json();
@@ -147,7 +180,14 @@ const ChartPage = () => {
 
   useEffect(() => {
     fetchTemporalChartData();
-  }, [selectedCategory, selectedTime, sortKey, sortOrder, currentPage]);
+  }, [
+    selectedCategory,
+    selectedTime,
+    sortKey,
+    sortOrder,
+    currentPage,
+    selectedDiseases
+  ]);
 
   // Determine display names based on selected category
   let displayNames = {};
@@ -224,11 +264,24 @@ const ChartPage = () => {
               flex: '70%'
             }}
           >
+            {/* Disease Multiselect */}
+            <MultiSelect
+              onValueChange={setSelectedDiseases}
+              placeholder="Select Diseases"
+              style={{ flex: '30%' }}
+            >
+              {diseaseNames.map((disease) => (
+                <MultiSelectItem key={disease} value={disease}>
+                  {disease}
+                </MultiSelectItem>
+              ))}
+            </MultiSelect>
+
             {/* Window Dropdown */}
             <Select
               value={selectedWindow}
               onValueChange={setSelectedWindow}
-              style={{ flex: '40%' }}
+              style={{ flex: '20%' }}
             >
               {Object.entries(WindowOptions).map(([key, value]) => (
                 <SelectItem key={key} value={value}>
@@ -241,7 +294,7 @@ const ChartPage = () => {
             <Select
               value={sortKey}
               onValueChange={setSortKey}
-              style={{ flex: '40%', marginLeft: '20px' }}
+              style={{ flex: '20%', marginLeft: '20px' }}
             >
               {renderSortKeyOptions()}
             </Select>
@@ -294,11 +347,24 @@ const ChartPage = () => {
               flex: '70%'
             }}
           >
+            {/* Disease Multiselect */}
+            <MultiSelect
+              onValueChange={setSelectedDiseases}
+              placeholder="Select Diseases"
+              style={{ flex: '30%' }}
+            >
+              {diseaseNames.map((disease) => (
+                <MultiSelectItem key={disease} value={disease}>
+                  {disease}
+                </MultiSelectItem>
+              ))}
+            </MultiSelect>
+
             {/* Sort Key Dropdown */}
             <Select
               value={sortKey}
               onValueChange={setSortKey}
-              style={{ flex: '40%', marginLeft: '20px' }}
+              style={{ flex: '20%', marginLeft: '20px' }}
             >
               {renderSortKeyOptions()}
             </Select>
@@ -347,11 +413,24 @@ const ChartPage = () => {
               flex: '70%'
             }}
           >
+            {/* Disease Multiselect */}
+            <MultiSelect
+              onValueChange={setSelectedDiseases}
+              placeholder="Select Diseases"
+              style={{ flex: '30%' }}
+            >
+              {diseaseNames.map((disease) => (
+                <MultiSelectItem key={disease} value={disease}>
+                  {disease}
+                </MultiSelectItem>
+              ))}
+            </MultiSelect>
+
             {/* Sort Key Dropdown */}
             <Select
               value={sortKey}
               onValueChange={setSortKey}
-              style={{ flex: '40%', marginLeft: '20px' }}
+              style={{ flex: '20%', marginLeft: '20px' }}
             >
               {renderSortKeyOptions()}
             </Select>
@@ -365,7 +444,7 @@ const ChartPage = () => {
               {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
             </button>
           </div>
-          <BarChart
+          <LineChart
             className="mt-4 h-80"
             data={
               selectedTime === TimeOptions.Monthly
