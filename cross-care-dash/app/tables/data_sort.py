@@ -4,6 +4,9 @@ import json
 import os
 import logging
 
+from datetime import datetime
+import calendar
+
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
@@ -25,6 +28,50 @@ def sort_data(data, sort_key, sort_order):
     else:
         data.sort(key=lambda x: int(x.get(sort_key, 0)), reverse=sort_order == "desc")
     return data
+
+
+# Function to sort data
+def transform_temporal_data(data, sort_order, TimeOption):
+    transformed_data = []
+
+    for entry in data:
+        # Handle different date formats based on TimeOption
+        if TimeOption == "monthly" or TimeOption == "yearly":
+            # Format the date based on TimeOption
+            date_obj = datetime.strptime(entry["date"], "%Y-%m-%dT%H:%M:%S.%f")
+            if TimeOption == "monthly":
+                date_str = date_obj.strftime("%b %Y")  # format like 'Jan 2023'
+            else:  # yearly
+                date_str = date_obj.strftime("%Y")  # format like '2023'
+        elif TimeOption == "five_yearly":
+            # For five-yearly, the date is already a year
+            year = int(entry["date"])  # Assuming the year is a string like '1990'
+            date_str = f"{year}-{year + 4}"  # format like '2020-2024'
+
+        # Create a new dictionary with the date and the other attributes
+        new_entry = {"date": date_str}
+        for key, value in entry.items():
+            if key not in ["date", "total_count", "freq"]:
+                new_entry[key] = value
+
+        transformed_data.append(new_entry)
+
+    # Optionally sort the data
+    if sort_order == "asc":
+        transformed_data.sort(
+            key=lambda x: datetime.strptime(
+                x["date"].split("-")[0], "%b %Y" if TimeOption == "monthly" else "%Y"
+            )
+        )
+    elif sort_order == "desc":
+        transformed_data.sort(
+            key=lambda x: datetime.strptime(
+                x["date"].split("-")[0], "%b %Y" if TimeOption == "monthly" else "%Y"
+            ),
+            reverse=True,
+        )
+
+    return transformed_data
 
 
 @app.route("/get-sorted-data", methods=["GET"])
@@ -106,6 +153,34 @@ def filter_by_disease(sorted_data, selectedDiseases):
         logging.error("An error occurred in filter_by_disease:", exc_info=True)
         # Decide whether to return the unfiltered data or an empty list in case of an error
         return []  # or return sorted_data if that's preferable
+
+
+def filter_temporal_data(temporal_data, selectedDiseases):
+    # Remove spaces and convert to lowercase for each disease in the selectedDiseases list
+    selectedDiseasesSet = set(
+        disease.replace(" ", "").lower() for disease in selectedDiseases.split(",")
+    )
+
+    # Define a lambda function for filtering
+    filter_func = lambda entry: any(
+        key.replace(" ", "").lower() in selectedDiseasesSet
+        for key in entry
+        if key != "date"
+    )
+
+    # Use the filter function with the lambda to filter the data
+    filtered_data = list(filter(filter_func, temporal_data))
+
+    # Creating a new list with filtered entries and retaining only the selected diseases
+    final_filtered_data = []
+    for entry in filtered_data:
+        filtered_entry = {"date": entry["date"]}
+        for disease in entry:
+            if disease.replace(" ", "").lower() in selectedDiseasesSet:
+                filtered_entry[disease] = entry[disease]
+        final_filtered_data.append(filtered_entry)
+
+    return final_filtered_data
 
 
 def extract_disease_names(data_file_path):
@@ -202,22 +277,29 @@ def get_additional_chart_data():
 @app.route("/get-temporal-chart-data", methods=["GET"])
 def get_temporal_chart_data():
     try:
-        category = request.args.get("category", "racial")
+        category = request.args.get("category", "total")
         sort_key = request.args.get("sortKey", "disease")
         sort_order = request.args.get("sortOrder", "asc")
         TimeOption = request.args.get("timeOption", "total")
+        selectedDiseases = request.args.get(
+            "selectedDiseases", "syphilis,covid-19,cancer,lupus,pneumonia"
+        )
 
         # Construct the path to the correct data file based on category
         temporal_data_path = os.path.join(
-            current_directory, f"../data/{category}_{TimeOption}_counts.json"
+            current_directory, f"../data/{TimeOption}_counts.json"
         )
         with open(temporal_data_path, "r") as file:
             temporal_data = json.load(file)
 
         # Sort data
-        temporal_data = sort_data(temporal_data, sort_key, sort_order)
+        temporal_data = transform_temporal_data(temporal_data, sort_order, TimeOption)
 
-        return jsonify(temporal_data)
+        # Filter data by selected disease
+        if selectedDiseases:
+            temporal_data = filter_temporal_data(temporal_data, selectedDiseases)
+
+        return temporal_data
     except Exception as e:
         print(f"An error occurred: {e}")
         return jsonify({"error": str(e)}), 500
