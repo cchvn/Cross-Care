@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Card, Title, Text } from '@tremor/react';
 import FeaturesSection from '../app/features';
 import OpenSourceSection from '../app/open_source';
+import DemoPlots from '../app/demo_plots';
 
 const IndexPage = () => {
   return (
@@ -12,7 +13,7 @@ const IndexPage = () => {
           <h1 className="font-heading text-3xl sm:text-5xl md:text-6xl lg:text-7xl">
             Cross-Care Dataset
           </h1>
-          <p className="max-w-[42rem] leading-normal text-muted-foreground sm:text-xl sm:leading-8">
+          <p className="max-w-[42rem] py-4 leading-normal text-muted-foreground sm:text-xl sm:leading-8">
             The Cross-Care dataset provides comprehensive insights into
             co-occurrence patterns of various diseases. This dataset is
             invaluable for researchers and healthcare professionals seeking to
@@ -29,6 +30,8 @@ const IndexPage = () => {
       {/* Features Section */}
       <FeaturesSection />
 
+      {/* Demo plots section */}
+      <DemoPlots />
       {/* Open Source Section */}
       <OpenSourceSection />
     </>

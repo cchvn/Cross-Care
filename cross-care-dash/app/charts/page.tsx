@@ -77,6 +77,22 @@ const ChartPage = () => {
     'Native American/Indigenous': 'native american/indigenous'
   };
 
+  const initialDiseaseList = [
+    'lupus',
+    'mental illness',
+    'suicide',
+    'ibs',
+    'tuberculoses',
+    'diabetes',
+    'sarcoidoses',
+    'pneumonia',
+    ' mi ',
+    'covid-19',
+    'dementia',
+    'multiple sclerosis',
+    'infection'
+  ];
+
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10; // or any other number
 
@@ -85,8 +101,13 @@ const ChartPage = () => {
       const response = await fetch('http://127.0.0.1:5000/get-disease-names');
       if (response.ok) {
         const names = await response.json();
-        console.log('Disease Names:', names); // Logging the names
         setDiseaseNames(names);
+
+        // Set initialDiseases to the diseases from initialDiseaseList that are present in the fetched names
+        const initialDiseases = initialDiseaseList.filter((disease) =>
+          names.includes(disease)
+        );
+        setSelectedDiseases(initialDiseases);
       } else {
         console.error('Server error:', response.status);
       }
@@ -187,16 +208,28 @@ const ChartPage = () => {
   }
 
   const chartColors = [
-    'red',
     'blue',
+    'red',
+    'orange',
+    'amber',
+    'purple',
+    'lime',
     'green',
     'pink',
-    'purple',
-    'amber',
-    'orange',
+    'emerald',
+    'cyan',
+    'teal',
     'yellow',
-    'brown',
-    'grey' // Add more colors as needed
+    'zinc',
+    'stone',
+    'sky',
+    'indigo',
+    'neutral',
+    'violet',
+    'slate',
+    'fuchsia',
+    'rose',
+    'gray'
   ];
 
   return (
@@ -228,6 +261,7 @@ const ChartPage = () => {
           >
             {/* Disease Multiselect */}
             <MultiSelect
+              value={selectedDiseases}
               onValueChange={setSelectedDiseases}
               placeholder="Select Diseases"
               style={{ flex: '30%' }}
@@ -311,6 +345,7 @@ const ChartPage = () => {
           >
             {/* Disease Multiselect */}
             <MultiSelect
+              value={selectedDiseases}
               onValueChange={setSelectedDiseases}
               placeholder="Select Diseases"
               style={{ flex: '30%' }}

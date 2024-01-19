@@ -8,30 +8,30 @@ import {
 
 const features = [
   {
-    title: 'Disease Co-occurrence',
-    metric: '10,000 Pairs',
-    delta: 'Comprehensive Analysis',
-    status: 'Data Insights',
+    title: 'Data',
+    metric: '>1TB Text Analyzed',
+    delta: 'RedPajama + Pile',
+    status: 'Large-Scale Datasets',
     color: 'emerald',
-    text: 'Analyzing patterns of disease co-occurrence across demographics.',
+    text: 'More than X trillion tokens analyzed.',
     icon: IoAnalyticsSharp
   },
   {
-    title: 'NLP Templates',
-    metric: 'Disease Prediction',
-    delta: 'AI-Driven Analysis',
-    status: 'Natural Language Processing',
+    title: 'Representation',
+    metric: 'Co-Occurrence Patterns',
+    delta: 'Demographic-Disease-Drug',
+    status: 'Representational Harm',
     color: 'blue',
-    text: 'Utilizing NLP templates for insightful health data interpretation.',
+    text: 'Race and Gender representation across X clinical terms.',
     icon: IoLanguage
   },
   {
-    title: 'Mechanistic Interpretability',
-    metric: 'Colab Demos',
-    delta: 'Clarity in Analysis',
-    status: 'Interpretability Demos',
+    title: 'Benchmarks',
+    metric: 'Benchmarking Framework',
+    delta: 'Subject-Relation-Object',
+    status: 'Smart SRO Generation',
     color: 'amber',
-    text: 'Demonstrating mechanistic interpretability in healthcare datasets.',
+    text: 'Create benchmarks and experiments that mirror the real-world.',
     icon: IoMedicalOutline
   }
 ];

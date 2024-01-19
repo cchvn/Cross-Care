@@ -83,8 +83,10 @@ const TablePage = () => {
       const response = await fetch('http://127.0.0.1:5000/get-disease-names');
       if (response.ok) {
         const names = await response.json();
-        console.log('Disease Names:', names); // Logging the names
         setDiseaseNames(names);
+        // Set the first 10 diseases as default selected diseases
+        const initialDiseases = names.length >= 10 ? names.slice(0, 10) : names;
+        setSelectedDiseases(initialDiseases);
       } else {
         console.error('Server error:', response.status);
       }
@@ -171,6 +173,7 @@ const TablePage = () => {
           >
             {/* Disease Multiselect */}
             <MultiSelect
+              value={selectedDiseases}
               onValueChange={setSelectedDiseases}
               placeholder="Select Diseases"
               style={{ flex: '30%' }}

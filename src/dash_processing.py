@@ -34,22 +34,34 @@ def replace_disease_codes(df, medical_keywords_dict):
 
 # Code to Disease codes with names for time series
 def replace_disease_names(df, medical_keywords_dict):
-    """
-    Replace disease column names with names in a DataFrame.
-
-    :param df: DataFrame with disease names/codes as column headers.
-    :param medical_keywords_dict: Dictionary mapping codes to lists of names.
-    :return: DataFrame with updated disease column names.
-    """
+    # for col in df.columns:
+    #     # Check if the column name is in the dictionary
+    #     if col in medical_keywords_dict:
+    #         # Rename the column to the first name in the list from the dictionary
+    #         df.rename(columns={col: medical_keywords_dict[col][0]}, inplace=True)
+    # return df
+    new_column_names = {}
     for col in df.columns:
-        # Check if the column name is in the dictionary
-        if col in medical_keywords_dict:
-            # Rename the column to the first name in the list from the dictionary
-            df.rename(columns={col: medical_keywords_dict[col][0]}, inplace=True)
+        # Check if the column name is a code in the dictionary
+        if isinstance(col, str) and col.endswith(".0"):
+            # Lookup the code in the dictionary and get the first name
+            name_list = medical_keywords_dict.get(col)
+            if name_list:
+                new_column_names[col] = name_list[0]
+        else:
+            new_column_names[col] = col
+
+    df = df.rename(columns=new_column_names)
     return df
 
 
 def write_to_json(data, filename):
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+    with open(filename, "w") as outfile:
+        json.dump(data, outfile)
+
+
+def write_temporal_to_json(data, filename):
     os.makedirs(os.path.dirname(filename), exist_ok=True)
     with open(filename, "w", encoding="utf-8") as outfile:
         # Load the data to remove backslashes and then dump it back as a string
@@ -138,6 +150,7 @@ def process_temporal_counts(csv_path, medical_keywords_dict):
         df_counts.rename(
             columns={"timestamp": "date", "Unnamed: 0": "total_count"}, inplace=True
         )
+        print(f"df_counts: {df_counts.head()}")
         df_counts = replace_disease_names(df_counts, medical_keywords_dict)
         df_counts["freq"] = freq
         if freq == "5Y":
@@ -245,68 +258,70 @@ if __name__ == "__main__":
 
     #### TOTAL COUNTS ####
 
-    # # Process total counts
-    # total_counts_data = process_total_counts(
-    #     csv_path=f"{count_dir}/total_disease_counts.csv",
-    #     medical_keywords_dict=medical_keywords_dict,
-    # )
-    # write_to_json(total_counts_data, f"{out_dir}/total_counts.json")
+    # Process total counts
+    total_counts_data = process_total_counts(
+        csv_path=f"{count_dir}/total_disease_counts.csv",
+        medical_keywords_dict=medical_keywords_dict,
+    )
+    write_to_json(total_counts_data, f"{out_dir}/total_counts.json")
 
-    # # Process demographic co-occurrence counts
-    # total_counts_dict = (
-    #     {}
-    # )  # Dictionary to store the counts for each demographic category
+    # Process demographic co-occurrence counts
+    total_counts_dict = (
+        {}
+    )  # Dictionary to store the counts for each demographic category
 
-    # for demo in demo_cat:
-    #     total_counts_dict[demo] = process_demo_counts(
-    #         count_dir=count_dir,
-    #         medical_keywords_dict=medical_keywords_dict,
-    #         demo_cat=demo,
-    #     )
-    #     write_to_json(total_counts_dict[demo], f"{out_dir}/total_{demo}_counts.json")
+    for demo in demo_cat:
+        total_counts_dict[demo] = process_demo_counts(
+            count_dir=count_dir,
+            medical_keywords_dict=medical_keywords_dict,
+            demo_cat=demo,
+        )
+        write_to_json(total_counts_dict[demo], f"{out_dir}/total_{demo}_counts.json")
 
     # Process date co-occurrence counts
     total_dates_data = process_temporal_counts(
         csv_path=f"{count_dir}/disease_date_counts.csv",
         medical_keywords_dict=medical_keywords_dict,
     )
-    write_to_json(total_dates_data["monthly"], f"{out_dir}/monthly_counts.json")
-    write_to_json(total_dates_data["yearly"], f"{out_dir}/yearly_counts.json")
-    write_to_json(
+    write_temporal_to_json(
+        total_dates_data["monthly"], f"{out_dir}/monthly_counts.json"
+    )
+    write_temporal_to_json(total_dates_data["yearly"], f"{out_dir}/yearly_counts.json")
+    write_temporal_to_json(
         total_dates_data["five_yearly"],
         f"{out_dir}/five_yearly_counts.json",
     )
 
-    # # #### SUBGROUP COUNTS ####
+    # #### SUBGROUP COUNTS ####
 
-    # # Process subgroup counts and percentage difference
-    # window_subgroup_dict = {}
+    # Process subgroup counts and percentage difference
+    window_subgroup_dict = {}
 
-    # for window_size in window_sizes:
-    #     for demo in demo_cat:
-    #         filename = f"{count_dir}/window_{window_size}/co_occurrence_{demo}.csv"
+    for window_size in window_sizes:
+        for demo in demo_cat:
+            filename = f"{count_dir}/window_{window_size}/co_occurrence_{demo}.csv"
 
-    #         # Process subgroup counts
-    #         subgroup_counts_data = process_subgroup_counts(
-    #             csv_path=filename, medical_keywords_dict=medical_keywords_dict
-    #         )
+            # Process subgroup counts
+            subgroup_counts_data = process_subgroup_counts(
+                csv_path=filename, medical_keywords_dict=medical_keywords_dict
+            )
 
-    #         write_to_json(
-    #             subgroup_counts_data,
-    #             f"{out_dir}/window_{window_size}_{demo}_counts.json",
-    #         )
+            write_to_json(
+                subgroup_counts_data,
+                f"{out_dir}/window_{window_size}_{demo}_counts.json",
+            )
 
-    # #### PERCENTAGE DIFFERENCE ####
+    #### PERCENTAGE DIFFERENCE ####
 
-    # for demo in demo_cat[:2]:
-    #     percentage_difference_data = process_percentage_difference(
-    #         out_dir=out_dir,
-    #         demo_cat=demo,
-    #         census_dict=census_dict,
-    #     )
-    #     write_to_json(
-    #         percentage_difference_data,
-    #         f"{out_dir}/percentage_difference_{demo}.json",
-    #     )
+    for demo in demo_cat[:2]:
+        percentage_difference_data = process_percentage_difference(
+            out_dir=out_dir,
+            demo_cat=demo,
+            census_dict=census_dict,
+        )
+        write_to_json(
+            percentage_difference_data,
+            f"{out_dir}/percentage_difference_{demo}.json",
+        )
 
     print("Done!")

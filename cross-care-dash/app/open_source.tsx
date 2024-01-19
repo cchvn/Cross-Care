@@ -9,10 +9,16 @@ const OpenSourceSection: React.FC = () => {
         <h2 className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl">
           Proudly Open Source
         </h2>
-        <p className="max-w-[85%] leading-normal text-muted-foreground sm:text-lg sm:leading-7">
+        <p className="max-w-[85%] leading-normal  text-muted-foreground sm:text-lg sm:leading-7">
           Our project is open source and powered by open source software. <br />
           The code is available on{' '}
-          <Link href="https://github.com/shan23chen/Cross-Care">GitHub</Link>.
+          <Link
+            href="https://github.com/shan23chen/Cross-Care"
+            className="hover:text-blue-600"
+          >
+            GitHub
+          </Link>
+          .
         </p>
       </div>
     </section>

@@ -15,7 +15,9 @@ import {
   MultiSelect,
   MultiSelectItem,
   Switch,
-  LineChart
+  LineChart,
+  NumberInput,
+  CalendarIcon
 } from '@tremor/react';
 
 const DataCategories = {
@@ -33,6 +35,22 @@ const TimeOptions = {
   Five_Yearly: 'five_yearly'
 };
 
+const initialDiseaseList = [
+  'lupus',
+  'mental illness',
+  'suicide',
+  'ibs',
+  'tuberculoses',
+  'diabetes',
+  'sarcoidoses',
+  'pneumonia',
+  ' mi ',
+  'covid-19',
+  'dementia',
+  'multiple sclerosis',
+  'infection'
+];
+
 const ChartPage = () => {
   const [selectedCategory, setSelectedCategory] = useState(
     DataCategories.TotalCounts
@@ -40,9 +58,11 @@ const ChartPage = () => {
   const [sortKey, setSortKey] = useState('disease');
   const [sortOrder, setSortOrder] = useState('asc');
   const [selectedWindow, setSelectedWindow] = useState(WindowOptions.Total);
-  const [selectedTime, setTime] = useState(TimeOptions.Monthly);
+  const [selectedTime, setTime] = useState(TimeOptions.Yearly);
   const [selectedDiseases, setSelectedDiseases] = useState([]);
   const [diseaseNames, setDiseaseNames] = useState([]);
+  const [yearStart, setYearStart] = useState(new Date().getFullYear() - 10); // 5 years ago as default
+  const [yearEnd, setYearEnd] = useState(new Date().getFullYear()); // Current year as default
 
   const sortKeys = {
     [DataCategories.TotalCounts]: ['disease', '0']
@@ -62,8 +82,11 @@ const ChartPage = () => {
       if (response.ok) {
         const names = await response.json();
         setDiseaseNames(names);
-        // Set the first 10 diseases as default selected diseases
-        const initialDiseases = names.length >= 10 ? names.slice(0, 10) : names;
+
+        // Set initialDiseases to the diseases from initialDiseaseList that are present in the fetched names
+        const initialDiseases = initialDiseaseList.filter((disease) =>
+          names.includes(disease)
+        );
         setSelectedDiseases(initialDiseases);
       } else {
         console.error('Server error:', response.status);
@@ -83,7 +106,7 @@ const ChartPage = () => {
     const selectedDiseasesString = selectedDiseases.join(',');
     try {
       const response = await fetch(
-        `http://127.0.0.1:5000/get-temporal-chart-data?category=${selectedCategory}&timeOption=${selectedTime}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}&selectedDiseases=${selectedDiseasesString}`
+        `http://127.0.0.1:5000/get-temporal-chart-data?category=${selectedCategory}&timeOption=${selectedTime}&sortKey=${sortKey}&sortOrder=${sortOrder}&startYear=${yearStart}&endYear=${yearEnd}&selectedDiseases=${selectedDiseasesString}`
       );
       if (response.ok) {
         const fetchedData = await response.json();
@@ -105,7 +128,9 @@ const ChartPage = () => {
     sortKey,
     sortOrder,
     currentPage,
-    selectedDiseases
+    selectedDiseases,
+    yearStart,
+    yearEnd
   ]);
 
   const [enableLegendSlider, setEnableLegendSlider] = useState(true); // State to manage legend slider
@@ -130,16 +155,28 @@ const ChartPage = () => {
   }
 
   const chartColors = [
-    'red',
     'blue',
+    'red',
+    'orange',
+    'amber',
+    'purple',
+    'lime',
     'green',
     'pink',
-    'purple',
-    'amber',
-    'orange',
+    'emerald',
+    'cyan',
+    'teal',
     'yellow',
-    'brown',
-    'grey' // Add more colors as needed
+    'zinc',
+    'stone',
+    'sky',
+    'indigo',
+    'neutral',
+    'violet',
+    'slate',
+    'fuchsia',
+    'rose',
+    'gray'
   ];
 
   return (
@@ -193,6 +230,26 @@ const ChartPage = () => {
                 </SelectItem>
               ))}
             </Select>
+
+            {/* Year Start Input */}
+            <NumberInput
+              icon={CalendarIcon}
+              placeholder="Start Year"
+              value={yearStart}
+              onChange={(e) => setYearStart(e.target.value)}
+              min={2000} // Set minimum year as required
+              max={yearEnd} // Maximum is the end year
+            />
+
+            {/* Year End Input */}
+            <NumberInput
+              icon={CalendarIcon}
+              placeholder="End Year"
+              value={yearEnd}
+              onChange={(e) => setYearEnd(e.target.value)}
+              min={yearStart} // Minimum is the start year
+              max={new Date().getFullYear()} // Set maximum year as the current year
+            />
 
             {/* Sort Order Button */}
             <button

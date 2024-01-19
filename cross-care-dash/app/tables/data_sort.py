@@ -282,8 +282,10 @@ def get_temporal_chart_data():
         sort_order = request.args.get("sortOrder", "asc")
         TimeOption = request.args.get("timeOption", "total")
         selectedDiseases = request.args.get(
-            "selectedDiseases", "syphilis,covid-19,cancer,lupus,pneumonia"
+            "selectedDiseases", "syphilis,lupus,pneumonia"
         )
+        startYear = request.args.get("startYear", type=int)
+        endYear = request.args.get("endYear", type=int)
 
         # Construct the path to the correct data file based on category
         temporal_data_path = os.path.join(
@@ -291,6 +293,26 @@ def get_temporal_chart_data():
         )
         with open(temporal_data_path, "r") as file:
             temporal_data = json.load(file)
+
+        # Filter data by years
+        if startYear and endYear:
+            if TimeOption == "five_yearly":
+                # Filter for five-yearly intervals
+                temporal_data = [
+                    entry
+                    for entry in temporal_data
+                    if startYear <= int(entry["date"]) <= endYear
+                    or startYear <= int(entry["date"]) + 4 <= endYear
+                ]
+            else:
+                # Filter for monthly and yearly data
+                temporal_data = [
+                    entry
+                    for entry in temporal_data
+                    if startYear
+                    <= datetime.strptime(entry["date"], "%Y-%m-%dT%H:%M:%S.%f").year
+                    <= endYear
+                ]
 
         # Sort data
         temporal_data = transform_temporal_data(temporal_data, sort_order, TimeOption)
