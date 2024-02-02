@@ -287,8 +287,7 @@ def jsonl_single_file_filtering(
     with open(file_path, "r") as file:
         lines = file.readlines()
 
-    # num_cores = cpu_count()
-    num_cores = 4
+    num_cores = cpu_count()
     chunk_size = len(lines) // num_cores
     if len(lines) % num_cores != 0:
         num_cores += 1
