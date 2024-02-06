@@ -21,7 +21,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import Joyride, { CallBackProps, STATUS, Step } from 'react-joyride';
-import { Box, BoxCenter, Button, Divider, H2, Paragraph } from '@gilbarbara/components';
+import { faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
 
 const DataCategories = {
   TotalCounts: 'total',
@@ -159,6 +159,16 @@ const TablePage = () => {
     }
   };
 
+  const handleSort = (newSortKey) => {
+    if (sortKey === newSortKey) {
+      // Toggle sort order if the same column header is clicked
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      // Change the sort key and set order to ascending by default
+      setSortKey(newSortKey);
+    }
+  };
+
   useEffect(() => {
     fetchSortedData();
   }, [
@@ -290,7 +300,7 @@ const TablePage = () => {
               value={selectedDiseases}
               onValueChange={setSelectedDiseases}
               placeholder="Select Diseases"
-              style={{ flex: '30%' }}
+              style={{ flex: '30%', marginRight: '20px' }}
             >
               {diseaseNames.map((disease) => (
                 <MultiSelectItem key={disease} value={disease}>
@@ -303,7 +313,7 @@ const TablePage = () => {
             <Select
               value={selectedWindow}
               onValueChange={setSelectedWindow}
-              style={{ flex: '20%' }}
+              style={{ flex: '20%' , marginLeft: '40px'}}
             >
               {Object.entries(WindowOptions).map(([key, value]) => (
                 <SelectItem key={key} value={value}>
@@ -313,22 +323,22 @@ const TablePage = () => {
             </Select>
 
             {/* Sort Key Dropdown */}
-            <Select
+            {/* <Select
               value={sortKey}
               onValueChange={setSortKey}
               style={{ flex: '20%', marginLeft: '20px' }}
             >
               {renderSortKeyOptions()}
-            </Select>
+            </Select> */}
 
             {/* Sort Order Button */}
-            <button
+            {/* <button
               onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
               className="btn mt4"
               style={{ flex: '20%', marginLeft: '20px' }}
             >
               {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
-            </button>
+            </button> */}
 
             {/* Download Button with Icon */}
             {renderDownloadButton(() => downloadJsonData())}
@@ -336,11 +346,23 @@ const TablePage = () => {
           <Table className="mt-4">
             <TableHead>
               <TableRow>
-                <TableHeaderCell>Disease</TableHeaderCell>
+                <TableHeaderCell onClick={() => handleSort('disease')}>
+                  Disease
+                  {sortKey === 'disease' && (
+                    <span style={{ marginLeft: '8px' }}>
+                    <FontAwesomeIcon icon={sortOrder === 'asc' ?  faArrowDown: faArrowUp} />
+                    </span>
+                  )}
+                </TableHeaderCell>
                 {selectedCategory === DataCategories.TotalCounts && (
-                  <TableHeaderCell className="text-right">
-                    Counts
-                  </TableHeaderCell>
+                  <TableHeaderCell onClick={() => handleSort('0')}>
+                  Counts
+                  {sortKey === '0' && (
+                    <span style={{ marginLeft: '8px' }}>
+                    <FontAwesomeIcon icon={sortOrder === 'asc' ? faArrowDown: faArrowUp} />
+                    </span>
+                  )}
+                </TableHeaderCell>
                 )}{' '}
                 {selectedCategory === DataCategories.GenderCounts && (
                   <>
