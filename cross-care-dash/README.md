@@ -35,3 +35,6 @@ python app/tables/data_sort.py
   - add slider for years in temporal data
 - Flask
   - allow time selection for temporal data
+
+## Interesting Co-occurences
+

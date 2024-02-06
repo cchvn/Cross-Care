@@ -18,6 +18,10 @@ import {
   LineChart
 } from '@tremor/react';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
+
+
 const DataCategories = {
   TotalCounts: 'total',
   GenderCounts: 'gender',
@@ -182,6 +186,38 @@ const ChartPage = () => {
     displayNames = racialDisplayNames;
   }
 
+  const downloadJsonData = (dataSource) => {
+    let dataToDownload;
+  
+    if (dataSource === 'chartData') {
+      dataToDownload = dataToShow;
+    } else if (dataSource === 'additionalChartData') {
+      dataToDownload = additionalChartData;
+    } else {
+      console.error('Invalid dataSource:', dataSource);
+      return;
+    }
+  
+    // Create a JSON string from the selected data
+    const jsonData = JSON.stringify(dataToDownload);
+  
+    // Create a Blob object containing the JSON data
+    const blob = new Blob([jsonData], { type: 'application/json' });
+  
+    // Create a download link element
+    const a = document.createElement('a');
+    a.href = window.URL.createObjectURL(blob);
+  
+    // Determine the filename based on the dataSource
+    const filename = dataSource === 'chartData' ? 'chart_data.json' : 'additional_chart_data.json';
+    a.download = filename;
+  
+    // Trigger a click event to initiate the download
+    a.click();
+  };
+  
+  
+
   // Render sort key dropdown options based on the current category
   const renderSortKeyOptions = () => {
     return Object.keys(displayNames).map((displayName) => (
@@ -303,6 +339,20 @@ const ChartPage = () => {
             >
               {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
             </button>
+
+            {/* Download Button with Icon */}
+            <button
+            onClick={() => downloadJsonData('chartData')}
+            style={{
+              backgroundColor: 'white',
+              color: 'black',
+              flex: '20px',
+              marginLeft: '10px',
+            }}
+            className="btn mt-4"
+          >
+            <FontAwesomeIcon icon={faDownload} />
+          </button>
           </div>
           <BarChart
             className="mt-4 h-80"
@@ -374,6 +424,20 @@ const ChartPage = () => {
             >
               {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
             </button>
+
+            {/* Download Button with Icon */}
+            <button
+            onClick={() => downloadJsonData('additionalChartData')}
+            style={{
+              backgroundColor: 'white',
+              color: 'black',
+              flex: '20px',
+              marginLeft: '10px',
+            }}
+            className="btn mt-4"
+          >
+            <FontAwesomeIcon icon={faDownload} />
+          </button>
           </div>
           <BarChart
             className="mt-4 h-80"

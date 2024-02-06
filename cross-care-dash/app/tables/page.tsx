@@ -18,6 +18,11 @@ import {
   MultiSelectItem
 } from '@tremor/react';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
+import Joyride, { CallBackProps, STATUS, Step } from 'react-joyride';
+import { Box, BoxCenter, Button, Divider, H2, Paragraph } from '@gilbarbara/components';
+
 const DataCategories = {
   TotalCounts: 'total',
   GenderCounts: 'gender',
@@ -33,6 +38,7 @@ const WindowOptions = {
   Window250: 'window_250'
 };
 
+
 const TablePage = () => {
   const [selectedCategory, setSelectedCategory] = useState(
     DataCategories.TotalCounts
@@ -43,6 +49,42 @@ const TablePage = () => {
   const [selectedWindow, setSelectedWindow] = useState(WindowOptions.Total);
   const [selectedDiseases, setSelectedDiseases] = useState([]);
   const [diseaseNames, setDiseaseNames] = useState([]);
+  const [isClient, setIsClient] = useState(false);
+  const [runTour, setRunTour] = useState(false); // State to control the visibility of the tour
+  const [steps, setSteps] = useState<Step[]>([ // Define the steps for the tour
+    {
+      target: 'body',
+      content: (
+        <div>
+          <p style={{ marginBottom: '16px' }}>🌍 <strong>Welcome to Our Health Data Exploration! 🌟</strong></p>
+          <p style={{ marginBottom: '16px' }}>Explore <span style={{ background: '#ffff99' }}>disparities in global health</span> through our dataset. <strong>COVID-19</strong>, leading with <span style={{ background: '#ffff99' }}>141,099 cases</span>, showcases the biases in attention and resources compared to other diseases.</p>
+          <p style={{ marginBottom: '16px' }}>📊 <em>Diseases like infections, diabetes, and mood disorders</em> highlight the story of <span style={{ background: '#ffff99' }}>unequal focus</span>. 💡 Let's dive into the data together.</p>
+          <p>🔍 <strong>Begin your journey</strong> towards understanding <span style={{ background: '#ffff99' }}>global health equity</span>.</p>
+        </div>
+      ),
+      placement: 'center',
+    },
+    {
+      target: '.tab-list > :nth-child(1)',
+      content: 'Select one or multiple diseases to filter the data.',
+      placement: 'bottom',
+    },
+    {
+      target: '.window-select',
+      content: 'Choose a window option to view data aggregated over different time frames.',
+      placement: 'bottom',
+    },
+    {
+      target: '.sort-select',
+      content: 'Sort the data based on different criteria.',
+      placement: 'bottom',
+    },
+    {
+      target: '.download-button',
+      content: 'Download the displayed data as a JSON file.',
+      placement: 'bottom',
+    }
+  ]);
 
   const sortKeys = {
     [DataCategories.TotalCounts]: ['disease', '0'],
@@ -146,8 +188,80 @@ const TablePage = () => {
     ));
   };
 
+  useEffect(() => {
+    // Consider triggering the tour based on a condition, e.g., first visit
+    // For demonstration, we start the tour automatically on component mount
+    setRunTour(true);
+  }, []); // Add dependencies if any conditions to start the tour are dynamic
+
+  const handleJoyrideCallback = (data: CallBackProps) => {
+    const { status } = data;
+    if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
+      setRunTour(false); // Hide the tour once it's finished or skipped
+    }
+  };
+
+  const downloadJsonData = () => {
+    let dataToDownload;
+    
+    dataToDownload = dataToShow;
+    
+    // Create a JSON string from the selected data
+    const jsonData = JSON.stringify(dataToDownload);
+  
+    // Create a Blob object containing the JSON data
+    const blob = new Blob([jsonData], { type: 'application/json' });
+  
+    // Create a download link element
+    const a = document.createElement('a');
+    a.href = window.URL.createObjectURL(blob);
+  
+    // Determine the filename based on the dataSource
+    const filename =  'chartData';
+    a.download = filename;
+  
+    // Trigger a click event to initiate the download
+    a.click();
+  };
+
+  const renderDownloadButton = (onClickHandler) => {
+    return (
+      <button
+        onClick={onClickHandler}
+        style={{
+          backgroundColor: 'white',
+          color: 'black',
+          flex: '20px',
+          marginLeft: '10px',
+        }}
+        className="btn mt-4"
+      >
+        <FontAwesomeIcon icon={faDownload} />
+      </button>
+    );
+  };
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   return (
-    <section className="flex-col justify-center items-center space-y-6 pb-8 pt-6 md:pb-12 md:pt-10 lg:py-32">
+    <>
+      {isClient && < Joyride
+        continuous
+        run={runTour}
+        scrollToFirstStep
+        showProgress
+        showSkipButton
+        steps={steps}
+        callback={handleJoyrideCallback}
+        styles={{
+          options: {
+            zIndex: 10000,
+          },
+        }}
+      />}
+      <section className="flex-col justify-center items-center space-y-6 pb-8 pt-6 md:pb-12 md:pt-10 lg:py-32">
       <div className="flex flex-col items-center px-40">
         <Card>
           <TabGroup
@@ -156,7 +270,7 @@ const TablePage = () => {
               setSelectedCategory(Object.values(DataCategories)[index])
             }
           >
-            <TabList className="mb-4" variant="line">
+            <TabList className="mb-4 tab-list" variant="line">
               <Tab>Total Counts</Tab>
               <Tab>Gender Counts</Tab>
               <Tab>Racial Counts</Tab>
@@ -215,6 +329,9 @@ const TablePage = () => {
             >
               {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
             </button>
+
+            {/* Download Button with Icon */}
+            {renderDownloadButton(() => downloadJsonData())}
           </div>
           <Table className="mt-4">
             <TableHead>
@@ -319,7 +436,8 @@ const TablePage = () => {
           </div>
         </Card>
       </div>
-    </section>
+      </section>
+    </>
   );
 };
 

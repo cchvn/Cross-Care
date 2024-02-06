@@ -20,6 +20,10 @@ import {
   CalendarIcon
 } from '@tremor/react';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
+
+
 const DataCategories = {
   TotalCounts: 'total',
   TimeCounts: 'time'
@@ -179,6 +183,44 @@ const ChartPage = () => {
     'gray'
   ];
 
+  const downloadJsonData = () => {
+    // Create a JSON string from the temporalChartData
+    const jsonData = JSON.stringify(temporalChartData);
+  
+    // Create a Blob object containing the JSON data
+    const blob = new Blob([jsonData], { type: 'application/json' });
+  
+    // Create a download link element
+    const a = document.createElement('a');
+    a.href = window.URL.createObjectURL(blob);
+  
+    // Determine the filename based on the data
+    const filename = 'temporalChartData.json'; // You can change the filename as needed
+    a.download = filename;
+  
+    // Trigger a click event to initiate the download
+    a.click();
+  };
+  
+
+  const renderDownloadButton = ( onClickHandler) => {
+    return (
+      <button
+        onClick={onClickHandler}
+        style={{
+          backgroundColor: 'white',
+          color: 'black',
+          flex: '20px',
+          marginLeft: '10px',
+        }}
+        className="btn mt-4"
+        title="Download JSON Data"
+      >
+        <FontAwesomeIcon icon={faDownload} />
+      </button>
+    );
+  };
+
   return (
     <section className="flex-col justify-center items-center space-y-6 pb-8 pt-6 md:pb-12 md:pt-10 lg:py-32">
       <div className="flex flex-col items-center px-40">
@@ -259,6 +301,9 @@ const ChartPage = () => {
             >
               {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
             </button>
+
+            {/* Download Button with Icon */}
+            {renderDownloadButton(() => downloadJsonData())}
           </div>
           <LineChart
             className="mt-4 h-80"
