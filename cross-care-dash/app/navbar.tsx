@@ -30,7 +30,7 @@ export default function Navbar({ user }: { user: any }) {
               <div className="flex">
                 <div className="flex flex-shrink-0 items-center">
                   <Image
-                    src="/logo.webp" // Path to your logo image
+                    src="/logo.svg" // Path to your logo image
                     alt="Logo" // Alternative text for the logo
                     width={32} // Adjust the width as needed
                     height={32} // Adjust the height as needed

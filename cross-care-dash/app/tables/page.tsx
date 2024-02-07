@@ -19,9 +19,8 @@ import {
 } from '@tremor/react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import Joyride, { CallBackProps, STATUS, Step } from 'react-joyride';
-import { faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
+import { faDownload, faArrowUp, faArrowDown, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 const DataCategories = {
   TotalCounts: 'total',
@@ -56,10 +55,13 @@ const TablePage = () => {
       target: 'body',
       content: (
         <div>
-          <p style={{ marginBottom: '16px' }}>🌍 <strong>Welcome to Our Health Data Exploration! 🌟</strong></p>
+          <p style={{ marginBottom: '16px' }}>🌍 <strong>Welcome to Our Health Data Exploration! </strong></p>
           <p style={{ marginBottom: '16px' }}>Explore <span style={{ background: '#ffff99' }}>disparities in global health</span> through our dataset. <strong>COVID-19</strong>, leading with <span style={{ background: '#ffff99' }}>141,099 cases</span>, showcases the biases in attention and resources compared to other diseases.</p>
-          <p style={{ marginBottom: '16px' }}>📊 <em>Diseases like infections, diabetes, and mood disorders</em> highlight the story of <span style={{ background: '#ffff99' }}>unequal focus</span>. 💡 Let's dive into the data together.</p>
+          <p style={{ marginBottom: '16px' }}>📊 Diseases like infections, diabetes, and mood disorders highlight the story of <span style={{ background: '#ffff99' }}>unequal focus</span>. 💡 Let's dive into the data together.</p>
           <p>🔍 <strong>Begin your journey</strong> towards understanding <span style={{ background: '#ffff99' }}>global health equity</span>.</p>
+          <div style = {{display: "flex", justifyContent: "center", marginTop: "10px"}}>
+            <img style = {{height: '100px'}} src="./corona.png" alt="Italian Trulli"/>
+          </div>
         </div>
       ),
       placement: 'center',
@@ -234,6 +236,8 @@ const TablePage = () => {
     a.click();
   };
 
+  
+
   const renderDownloadButton = (onClickHandler) => {
     return (
       <button
@@ -284,8 +288,23 @@ const TablePage = () => {
               <Tab>Total Counts</Tab>
               <Tab>Gender Counts</Tab>
               <Tab>Racial Counts</Tab>
+              <button
+                onClick={() => window.location.href = 'http://localhost:3000/docs'} // Replace this with your actual documentation page URL
+                style={{
+                  backgroundColor: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'inherit', // Adjust color to fit your design
+                }}
+                title="Documentation"
+              >
+                <FontAwesomeIcon icon={faInfoCircle} size="lg" /> {/* You can adjust the size (lg, 2x, etc.) */}
+              </button>
             </TabList>
+            
           </TabGroup>
+          
+
 
           <div
             style={{
@@ -355,7 +374,7 @@ const TablePage = () => {
                   )}
                 </TableHeaderCell>
                 {selectedCategory === DataCategories.TotalCounts && (
-                  <TableHeaderCell onClick={() => handleSort('0')}>
+                  <TableHeaderCell className="text-right" onClick={() => handleSort('0')}>
                   Counts
                   {sortKey === '0' && (
                     <span style={{ marginLeft: '8px' }}>
@@ -366,34 +385,77 @@ const TablePage = () => {
                 )}{' '}
                 {selectedCategory === DataCategories.GenderCounts && (
                   <>
-                    <TableHeaderCell className="text-right">
+                    <TableHeaderCell  className="text-right" onClick={() => handleSort('male')}>
                       Male
+                      {sortKey === 'male' && (
+                        <span style={{ marginLeft: '8px' }}>
+                        <FontAwesomeIcon icon={sortOrder === 'asc' ? faArrowDown: faArrowUp} />
+                        </span>
+                      )}
                     </TableHeaderCell>
-                    <TableHeaderCell className="text-right">
+                    <TableHeaderCell  className="text-right" onClick={() => handleSort('female')}>
                       Female
+                      {sortKey === 'female' && (
+                        <span style={{ marginLeft: '8px' }}>
+                        <FontAwesomeIcon icon={sortOrder === 'asc' ? faArrowDown: faArrowUp} />
+                        </span>
+                      )}
                     </TableHeaderCell>
                   </>
                 )}
                 {selectedCategory === DataCategories.RacialCounts && (
                   <>
-                    <TableHeaderCell className="text-right">
+                    <TableHeaderCell onClick={() => handleSort('white/caucasian')}>
                       White/Caucasian
+                      {sortKey === 'white/caucasian' && (
+                        <span style={{ marginLeft: '8px' }}>
+                        <FontAwesomeIcon icon={sortOrder === 'asc' ?  faArrowDown: faArrowUp} />
+                        </span>
+                      )}
                     </TableHeaderCell>
-                    <TableHeaderCell className="text-right">
+                    <TableHeaderCell onClick={() => handleSort('black/african american')}>
                       Black/African American
+                      {sortKey === 'black/african american' && (
+                        <span style={{ marginLeft: '8px' }}>
+                        <FontAwesomeIcon icon={sortOrder === 'asc' ?  faArrowDown: faArrowUp} />
+                        </span>
+                      )}
                     </TableHeaderCell>
-                    <TableHeaderCell className="text-right">
+                    <TableHeaderCell onClick={() => handleSort('asian')}>
                       Asian
+                      {sortKey === 'asian' && (
+                        <span style={{ marginLeft: '8px' }}>
+                        <FontAwesomeIcon icon={sortOrder === 'asc' ?  faArrowDown: faArrowUp} />
+                        </span>
+                      )}
                     </TableHeaderCell>
-                    <TableHeaderCell className="text-right">
-                      Hispanic/Latino
+                    <TableHeaderCell onClick={() => handleSort('hispanic/latino')}>
+                    Hispanic/Latino
+                      {sortKey === 'hispanic/latino' && (
+                        <span style={{ marginLeft: '8px' }}>
+                        <FontAwesomeIcon icon={sortOrder === 'asc' ?  faArrowDown: faArrowUp} />
+                        </span>
+                      )}
                     </TableHeaderCell>
-                    <TableHeaderCell className="text-right">
+                    <TableHeaderCell onClick={() => handleSort('pacific islander')}>
                       Pacific Islander
+                      {sortKey === 'pacific islander' && (
+                        <span style={{ marginLeft: '8px' }}>
+                        <FontAwesomeIcon icon={sortOrder === 'asc' ?  faArrowDown: faArrowUp} />
+                        </span>
+                      )}
                     </TableHeaderCell>
-                    <TableHeaderCell className="text-right">
+
+                    <TableHeaderCell onClick={() => handleSort('native american/indigenous')}>
                       Native American/Indigenous
+                      {sortKey === 'native american/indigenous' && (
+                        <span style={{ marginLeft: '8px' }}>
+                        <FontAwesomeIcon icon={sortOrder === 'asc' ?  faArrowDown: faArrowUp} />
+                        </span>
+                      )}
                     </TableHeaderCell>
+  
+                   
                   </>
                 )}
               </TableRow>
