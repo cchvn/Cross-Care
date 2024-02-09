@@ -20,7 +20,7 @@ import {
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Joyride, { CallBackProps, STATUS, Step } from 'react-joyride';
-import { faDownload, faArrowUp, faArrowDown, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { faChevronLeft, faChevronRight, faDownload, faArrowUp, faArrowDown, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 const DataCategories = {
   TotalCounts: 'total',
@@ -49,16 +49,18 @@ const TablePage = () => {
   const [selectedDiseases, setSelectedDiseases] = useState([]);
   const [diseaseNames, setDiseaseNames] = useState([]);
   const [isClient, setIsClient] = useState(false);
+  const [hasMoreItems, setHasMoreItems] = useState(true);
+
   const [runTour, setRunTour] = useState(false); // State to control the visibility of the tour
   const [steps, setSteps] = useState<Step[]>([ // Define the steps for the tour
     {
       target: 'body',
       content: (
         <div>
-          <p style={{ marginBottom: '16px' }}>🌍 <strong>Welcome to Our Health Data Exploration! </strong></p>
-          <p style={{ marginBottom: '16px' }}>Explore <span style={{ background: '#ffff99' }}>disparities in global health</span> through our dataset. <strong>COVID-19</strong>, leading with <span style={{ background: '#ffff99' }}>141,099 cases</span>, showcases the biases in attention and resources compared to other diseases.</p>
-          <p style={{ marginBottom: '16px' }}>📊 Diseases like infections, diabetes, and mood disorders highlight the story of <span style={{ background: '#ffff99' }}>unequal focus</span>. 💡 Let's dive into the data together.</p>
-          <p>🔍 <strong>Begin your journey</strong> towards understanding <span style={{ background: '#ffff99' }}>global health equity</span>.</p>
+          <p style={{ marginBottom: '16px' }}> <strong>  Welcome to Our Health Data Exploration! </strong></p>
+          <p style={{ marginBottom: '16px' }}>Explore <span style={{ background: '#D3D3D3' }}>disparities in global health</span> through our dataset. <strong>COVID-19</strong>, leading with <span style={{ background: '#D3D3D3' }}>141,099 cases</span>, showcases the biases in attention and resources compared to other diseases.</p>
+          <p style={{ marginBottom: '16px' }}> Diseases like infections, diabetes, and mood disorders highlight the story of <span style={{ background: '#D3D3D3' }}>unequal focus</span>. Let's dive into the data together.</p>
+          <p>🔍 <strong>Begin your journey</strong> towards understanding <span style={{ background: '#D3D3D3' }}>global health equity</span>.</p>
           <div style = {{display: "flex", justifyContent: "center", marginTop: "10px"}}>
             <img style = {{height: '100px'}} src="./corona.png" alt="Italian Trulli"/>
           </div>
@@ -270,9 +272,18 @@ const TablePage = () => {
         steps={steps}
         callback={handleJoyrideCallback}
         styles={{
-          options: {
-            zIndex: 10000,
+          buttonNext: {
+            backgroundColor: '#750014', // Example: Change the Next button to blue
+            color: '#fff',
+            borderBlockColor: 'white',
+            borderColor: 'white'
           },
+          buttonBack: {
+            color: '#750014',
+          },
+          options: {
+            primaryColor: '#000',
+          }
         }}
       />}
       <section className="flex-col justify-center items-center space-y-6 pb-8 pt-6 md:pb-12 md:pt-10 lg:py-32">
@@ -301,10 +312,7 @@ const TablePage = () => {
                 <FontAwesomeIcon icon={faInfoCircle} size="lg" /> {/* You can adjust the size (lg, 2x, etc.) */}
               </button>
             </TabList>
-            
           </TabGroup>
-          
-
 
           <div
             style={{
@@ -341,25 +349,6 @@ const TablePage = () => {
               ))}
             </Select>
 
-            {/* Sort Key Dropdown */}
-            {/* <Select
-              value={sortKey}
-              onValueChange={setSortKey}
-              style={{ flex: '20%', marginLeft: '20px' }}
-            >
-              {renderSortKeyOptions()}
-            </Select> */}
-
-            {/* Sort Order Button */}
-            {/* <button
-              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-              className="btn mt4"
-              style={{ flex: '20%', marginLeft: '20px' }}
-            >
-              {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
-            </button> */}
-
-            {/* Download Button with Icon */}
             {renderDownloadButton(() => downloadJsonData())}
           </div>
           <Table className="mt-4">
@@ -499,25 +488,44 @@ const TablePage = () => {
               ))}
             </TableBody>
           </Table>
-          <div
-            className={'toastContent'}
-            style={{ display: 'flex', justifyContent: 'space-between' }}
-          >
+          <div className="toastContent" style={{ display: 'flex', justifyContent: 'center', alignContent: 'center' }}>
             <button
               onClick={() => setCurrentPage(currentPage - 1)}
-              disabled={currentPage === 1}
-              className={`${'btn'} ${'mt4'}`}
+              className={`btn mt-4 ${currentPage <= 1 ? 'invisible' : ''}`}
+              disabled={currentPage <= 1}
+              style={{ 
+                pointerEvents: currentPage <= 1 ? 'none' : 'auto',
+                border: 'none',
+                background: 'transparent',
+                margin: '0px',
+                alignSelf: 'center'
+
+              }}
             >
-              Previous
+              <FontAwesomeIcon icon={faChevronLeft} size="lg" style={{ color: 'black' }} />
             </button>
-            <span>Page {currentPage}</span>
+
+            <span style={{ alignSelf: 'center' }}>Page {currentPage}</span>
+
             <button
               onClick={() => setCurrentPage(currentPage + 1)}
-              className={`${'btn'} ${'mt4'}`}
+              className={`btn mt-4 ${dataToShow.length < pageSize ? 'invisible' : ''}`}
+              disabled={dataToShow.length < pageSize}
+              style={{ 
+                pointerEvents: dataToShow.length < pageSize ? 'none' : 'auto',
+                border: 'none',
+                background: 'transparent',
+                margin: '0px',
+                alignSelf: 'center'
+              }}
             >
-              Next
+              <FontAwesomeIcon icon={faChevronRight} size="lg" style={{ color: 'black' }} />
             </button>
           </div>
+
+
+  
+
         </Card>
       </div>
       </section>

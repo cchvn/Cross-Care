@@ -37,8 +37,8 @@ const IndexPage = () => {
           </h1>
             <div style={{ paddingRight: "0%"}}>
               <p className="max-w-[42rem] py-4 leading-normal text-muted-foreground sm:text-xl sm:leading-8">
-                The Cross-Care dataset provides comprehensive insights into
-                co-occurrence patterns of various diseases. This dataset is
+                The Cross-Care Dataset provides comprehensive insights into <span style={{textDecoration: "underline", textDecorationColor: "white" }} >co-occurrence patterns </span>  
+                  of various diseases. This dataset is
                 invaluable for researchers and healthcare professionals seeking to
                 understand complex disease interactions and trends.
               </p>
@@ -58,7 +58,7 @@ const IndexPage = () => {
                     color: "#E5E4E2",
                     width: '25px'
                   }}
-                ><a href="https://criticaldata.mit.edu/" target="_blank">
+                ><a href="https://www.linkedin.com/company/mitcriticaldata/" target="_blank">
                   <FontAwesomeIcon icon={faLinkedinIn} /> </a>
                 </div>
 
