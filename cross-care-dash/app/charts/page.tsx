@@ -19,7 +19,8 @@ import {
 } from '@tremor/react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDownload } from '@fortawesome/free-solid-svg-icons';
+import { faDownload, faInfoCircle} from '@fortawesome/free-solid-svg-icons';
+import Joyride, { CallBackProps, STATUS, Step } from 'react-joyride';
 
 
 const DataCategories = {
@@ -48,6 +49,26 @@ const ChartPage = () => {
   const [selectedWindow, setSelectedWindow] = useState(WindowOptions.Total);
   const [selectedDiseases, setSelectedDiseases] = useState([]);
   const [diseaseNames, setDiseaseNames] = useState([]);
+  const [isClient, setIsClient] = useState(false);
+  const [runTour, setRunTour] = useState(false); // State to control the visibility of the tour
+  const [steps, setSteps] = useState<Step[]>([
+    {
+      target: 'body',
+      content: 'Use these tabs to switch between different data categories.',
+      placement: 'center',
+    },
+    {
+      target: '.multi-select',
+      content: 'Select one or more diseases to filter the chart data.',
+      placement: 'bottom',
+    },
+    {
+      target: '.bar-chart',
+      content: 'View the distribution of data across selected diseases.',
+      placement: 'top',
+    },
+    // Add more steps as needed
+  ]);
 
   const sortKeys = {
     [DataCategories.TotalCounts]: ['disease', '0'],
@@ -215,8 +236,22 @@ const ChartPage = () => {
     // Trigger a click event to initiate the download
     a.click();
   };
-  
-  
+
+  useEffect(() => {
+    // Only run the tour if the 'tourShown' flag is not set in localStorage
+    const tourShown = localStorage.getItem('tourShown');
+    if (!tourShown) {
+      setRunTour(true);
+    }
+  }, []);
+
+  const handleJoyrideCallback = (data: CallBackProps) => {
+    const { status } = data;
+    if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
+      setRunTour(false); // Hide the tour once it's finished or skipped
+      localStorage.setItem('tourShown', 'true'); // Set a flag in localStorage
+    }
+  };
 
   // Render sort key dropdown options based on the current category
   const renderSortKeyOptions = () => {
@@ -268,7 +303,26 @@ const ChartPage = () => {
     'gray'
   ];
 
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   return (
+    <>
+    {isClient && (<Joyride
+        continuous
+        run={runTour}
+        scrollToFirstStep
+        showProgress
+        showSkipButton
+        steps={steps}
+        callback={handleJoyrideCallback}
+        styles={{
+          options: {
+            zIndex: 10000, // Ensure Joyride tooltip is above other elements
+          },
+        }}
+      />)}
     <section className="flex-col justify-center items-center space-y-6 pb-8 pt-6 md:pb-12 md:pt-10 lg:py-32">
       <div className="flex flex-col items-center px-40">
         <Card>
@@ -282,6 +336,18 @@ const ChartPage = () => {
               <Tab>Total Counts</Tab>
               <Tab>Gender Counts</Tab>
               <Tab>Racial Counts</Tab>
+              <button
+                onClick={() => window.location.href = 'http://localhost:3000/docs'} // Replace this with your actual documentation page URL
+                style={{
+                  backgroundColor: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'inherit', // Adjust color to fit your design
+                }}
+                title="Documentation"
+              >
+                <FontAwesomeIcon icon={faInfoCircle} size="lg" /> {/* You can adjust the size (lg, 2x, etc.) */}
+              </button>
             </TabList>
           </TabGroup>
           <Title>Dynamic Disease Data Visualization</Title>
@@ -313,7 +379,7 @@ const ChartPage = () => {
             <Select
               value={selectedWindow}
               onValueChange={setSelectedWindow}
-              style={{ flex: '20%' }}
+              style={{ marginLeft: "15px",  marginRight: "15px", flex: '20%' }}
             >
               {Object.entries(WindowOptions).map(([key, value]) => (
                 <SelectItem key={key} value={value}>
@@ -326,7 +392,7 @@ const ChartPage = () => {
             <Select
               value={sortKey}
               onValueChange={setSortKey}
-              style={{ flex: '20%', marginLeft: '20px' }}
+              style={{ flex: '20%' }}
             >
               {renderSortKeyOptions()}
             </Select>
@@ -335,7 +401,7 @@ const ChartPage = () => {
             <button
               onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
               className="btn mt4"
-              style={{ flex: '20%', marginLeft: '20px' }}
+              style={{ marginTop: "0px", flex: '20%', marginLeft: '20px', alignSelf:"center" }}
             >
               {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
             </button>
@@ -365,7 +431,7 @@ const ChartPage = () => {
           />
         </Card>
       </div>
-      <div className="flex flex-col items-center px-40">
+      { selectedCategory !== DataCategories.TotalCounts && (<div className="flex flex-col items-center px-40">
         <Card>
           <TabGroup
             index={Object.values(DataCategories).indexOf(selectedCategory)}
@@ -377,6 +443,7 @@ const ChartPage = () => {
               <Tab>Total Counts</Tab>
               <Tab>Gender Counts</Tab>
               <Tab>Racial Counts</Tab>
+
             </TabList>
           </TabGroup>
           <Title>Relative Representation</Title>
@@ -449,8 +516,9 @@ const ChartPage = () => {
             yAxisWidth={60}
           />
         </Card>
-      </div>
+      </div>)}
     </section>
+    </>
   );
 };
 

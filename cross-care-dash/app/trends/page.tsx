@@ -21,7 +21,8 @@ import {
 } from '@tremor/react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDownload } from '@fortawesome/free-solid-svg-icons';
+import { faDownload, faInfoCircle} from '@fortawesome/free-solid-svg-icons';
+import Joyride, { CallBackProps, STATUS, Step } from 'react-joyride';
 
 
 const DataCategories = {
@@ -67,6 +68,26 @@ const ChartPage = () => {
   const [diseaseNames, setDiseaseNames] = useState([]);
   const [yearStart, setYearStart] = useState(new Date().getFullYear() - 10); // 5 years ago as default
   const [yearEnd, setYearEnd] = useState(new Date().getFullYear()); // Current year as default
+  const [isClient, setIsClient] = useState(false);
+  const [runTour, setRunTour] = useState(false); // State to control the visibility of the tour
+  const [steps, setSteps] = useState<Step[]>([
+    {
+      target: 'body',
+      content: 'Use these tabs to switch between different data categories.',
+      placement: 'center',
+    },
+    {
+      target: '.multi-select',
+      content: 'Select one or more diseases to filter the chart data.',
+      placement: 'bottom',
+    },
+    {
+      target: '.bar-chart',
+      content: 'View the distribution of data across selected diseases.',
+      placement: 'top',
+    },
+    // Add more steps as needed
+  ]);
 
   const sortKeys = {
     [DataCategories.TotalCounts]: ['disease', '0']
@@ -143,6 +164,22 @@ const ChartPage = () => {
   if (selectedCategory === DataCategories.TotalCounts) {
     displayNames = totalDisplayNames;
   }
+
+  useEffect(() => {
+    // Only run the tour if the 'tourShown' flag is not set in localStorage
+    const tourShown = localStorage.getItem('tourShown');
+    if (!tourShown) {
+      setRunTour(true);
+    }
+  }, []);
+
+  const handleJoyrideCallback = (data: CallBackProps) => {
+    const { status } = data;
+    if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
+      setRunTour(false); // Hide the tour once it's finished or skipped
+      localStorage.setItem('tourShown', 'true'); // Set a flag in localStorage
+    }
+  };
 
   // Render sort key dropdown options based on the current category
   const renderSortKeyOptions = () => {
@@ -221,7 +258,26 @@ const ChartPage = () => {
     );
   };
 
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   return (
+    <>
+    {isClient && (<Joyride
+        continuous
+        run={runTour}
+        scrollToFirstStep
+        showProgress
+        showSkipButton
+        steps={steps}
+        callback={handleJoyrideCallback}
+        styles={{
+          options: {
+            zIndex: 10000, // Ensure Joyride tooltip is above other elements
+          },
+        }}
+      />)}
     <section className="flex-col justify-center items-center space-y-6 pb-8 pt-6 md:pb-12 md:pt-10 lg:py-32">
       <div className="flex flex-col items-center px-40">
         <Card>
@@ -233,6 +289,18 @@ const ChartPage = () => {
           >
             <TabList className="mb-4" variant="line">
               <Tab>Total Counts</Tab>
+              <button
+                onClick={() => window.location.href = 'http://localhost:3000/docs'} // Replace this with your actual documentation page URL
+                style={{
+                  backgroundColor: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'inherit', // Adjust color to fit your design
+                }}
+                title="Documentation"
+              >
+                <FontAwesomeIcon icon={faInfoCircle} size="lg" /> {/* You can adjust the size (lg, 2x, etc.) */}
+              </button>
             </TabList>
           </TabGroup>
           <Title>Representation Trends</Title>
@@ -250,7 +318,7 @@ const ChartPage = () => {
               value={selectedDiseases}
               onValueChange={setSelectedDiseases}
               placeholder="Select Diseases"
-              style={{ flex: '30%' }}
+              style={{ flex: '50%' }}
             >
               {diseaseNames.map((disease) => (
                 <MultiSelectItem key={disease} value={disease}>
@@ -264,7 +332,7 @@ const ChartPage = () => {
               value={selectedTime}
               onValueChange={setTime}
               placeholder="Select Time Option"
-              style={{ flex: '30%' }}
+              style={{ marginLeft: "10px", flex: '10%' }}
             >
               {Object.keys(TimeOptions).map((option) => (
                 <SelectItem key={option} value={TimeOptions[option]}>
@@ -274,30 +342,34 @@ const ChartPage = () => {
             </Select>
 
             {/* Year Start Input */}
-            <NumberInput
-              icon={CalendarIcon}
-              placeholder="Start Year"
-              value={yearStart}
-              onChange={(e) => setYearStart(e.target.value)}
-              min={2000} // Set minimum year as required
-              max={yearEnd} // Maximum is the end year
-            />
+            <div style={{marginLeft: "10px"}} className="input-wrapper">
+              <NumberInput
+                icon={CalendarIcon}
+                placeholder="Start Year"
+                value={yearStart}
+                onChange={(e) => setYearStart(e.target.value)}
+                min={2000} // Set minimum year as required
+                max={yearEnd} // Maximum is the end year
+              />
+            </div>
 
             {/* Year End Input */}
-            <NumberInput
-              icon={CalendarIcon}
-              placeholder="End Year"
-              value={yearEnd}
-              onChange={(e) => setYearEnd(e.target.value)}
-              min={yearStart} // Minimum is the start year
-              max={new Date().getFullYear()} // Set maximum year as the current year
-            />
+            <div style={{marginLeft: "10px"}} className="input-wrapper">
+              <NumberInput
+                icon={CalendarIcon}
+                placeholder="End Year"
+                value={yearEnd}
+                onChange={(e) => setYearEnd(e.target.value)}
+                min={yearStart} // Minimum is the start year
+                max={new Date().getFullYear()} // Set maximum year as the current year
+              />
+            </div>
 
             {/* Sort Order Button */}
             <button
               onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
               className="btn mt4"
-              style={{ flex: '20%', marginLeft: '20px' }}
+              style={{ flex: '20%', marginLeft: '10px', padding: '10px', marginTop: "0px"}}
             >
               {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
             </button>
@@ -312,27 +384,13 @@ const ChartPage = () => {
             categories={selectedDiseases}
             colors={chartColors}
             yAxisWidth={60}
-            enableLegendSlider={enableLegendSlider} // Use the state here
+            enableLegendSlider={true} // Use the state here
             showAnimation={true}
           />
-
-          {/* Legend Slider Switch */}
-          <div className="p-6 bg-gray-50 border-t flex items-center space-x-3 rounded-b-lg">
-            <Switch
-              id="legend-slider-switch"
-              checked={enableLegendSlider}
-              onChange={() => setEnableLegendSlider(!enableLegendSlider)}
-            />
-            <label
-              className="text-sm text-slate-500"
-              htmlFor="legend-slider-switch"
-            >
-              Enable Legend Slider
-            </label>
-          </div>
         </Card>
       </div>
     </section>
+    </>
   );
 };
 export default ChartPage;

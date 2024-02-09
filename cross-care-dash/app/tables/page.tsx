@@ -49,8 +49,6 @@ const TablePage = () => {
   const [selectedDiseases, setSelectedDiseases] = useState([]);
   const [diseaseNames, setDiseaseNames] = useState([]);
   const [isClient, setIsClient] = useState(false);
-  const [hasMoreItems, setHasMoreItems] = useState(true);
-
   const [runTour, setRunTour] = useState(false); // State to control the visibility of the tour
   const [steps, setSteps] = useState<Step[]>([ // Define the steps for the tour
     {
@@ -203,17 +201,21 @@ const TablePage = () => {
   };
 
   useEffect(() => {
-    // Consider triggering the tour based on a condition, e.g., first visit
-    // For demonstration, we start the tour automatically on component mount
-    setRunTour(true);
-  }, []); // Add dependencies if any conditions to start the tour are dynamic
+    // Only run the tour if the 'tourShown' flag is not set in localStorage
+    const tourShown = localStorage.getItem('tourShown');
+    if (!tourShown) {
+      setRunTour(true);
+    }
+  }, []); // This useEffect will run only once when the component mounts
 
-  const handleJoyrideCallback = (data: CallBackProps) => {
+  const handleJoyrideCallback = (data) => {
     const { status } = data;
     if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
       setRunTour(false); // Hide the tour once it's finished or skipped
+      localStorage.setItem('tourShown', 'true'); // Set a flag in localStorage
     }
   };
+
 
   const downloadJsonData = () => {
     let dataToDownload;
