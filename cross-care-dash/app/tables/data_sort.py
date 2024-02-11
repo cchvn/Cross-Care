@@ -116,8 +116,9 @@ def get_sorted_data():
         start = (page - 1) * per_page
         end = start + per_page
         paginated_data = sorted_data[start:end]
+        length = len(sorted_data)
 
-        return jsonify(paginated_data)
+        return jsonify(length, paginated_data)
     except Exception as e:
         logging.error("An error occurred in get_sorted_data:", exc_info=True)
         return jsonify({"error": str(e)}), 500

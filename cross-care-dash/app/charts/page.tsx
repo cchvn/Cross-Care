@@ -323,7 +323,7 @@ const ChartPage = () => {
           },
         }}
       />)}
-    <section className="flex-col justify-center items-center space-y-6 pb-8 pt-6 md:pb-12 md:pt-10 lg:py-32">
+    <section className="flex-col justify-center items-center space-y-6 pb-8 pt-5 md:pb-12 md:pt-5 lg:pb-32 lg:pt-5">
       <div className="flex flex-col items-center px-40">
         <Card>
           <TabGroup

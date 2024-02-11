@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { Card, Title, Text } from '@tremor/react';
 import FeaturesSection from '../app/features';
 import OpenSourceSection from '../app/open_source';
 import DemoPlots from '../app/demo_plots';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXTwitter, faFacebookF, faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
+import { faXTwitter, faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
 
 const IndexPage = () => {
   return (
@@ -37,8 +36,7 @@ const IndexPage = () => {
           </h1>
             <div style={{ paddingRight: "0%"}}>
               <p className="max-w-[42rem] py-4 leading-normal text-muted-foreground sm:text-xl sm:leading-8">
-                The Cross-Care Dataset provides comprehensive insights into <span style={{textDecoration: "underline", textDecorationColor: "white" }} >co-occurrence patterns </span>  
-                  of various diseases. This dataset is
+                The Cross-Care Dataset provides comprehensive insights into <span style={{textDecoration: "underline", textDecorationColor: "white" }} >co-occurrence patterns</span> of various diseases. This dataset is
                 invaluable for researchers and healthcare professionals seeking to
                 understand complex disease interactions and trends.
               </p>

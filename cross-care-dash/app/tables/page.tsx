@@ -49,6 +49,7 @@ const TablePage = () => {
   const [selectedDiseases, setSelectedDiseases] = useState([]);
   const [diseaseNames, setDiseaseNames] = useState([]);
   const [isClient, setIsClient] = useState(false);
+  const [dataSize, setDataSize] = useState(0);
   const [runTour, setRunTour] = useState(false); // State to control the visibility of the tour
   const [steps, setSteps] = useState<Step[]>([ // Define the steps for the tour
     {
@@ -150,7 +151,9 @@ const TablePage = () => {
         `http://127.0.0.1:5000/get-sorted-data?category=${selectedCategory}&selectedWindow=${selectedWindow}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}&selectedDiseases=${selectedDiseasesString}`
       );
       if (response.ok) {
-        const sortedData = await response.json();
+        const data = await response.json();
+        setDataSize(data[0])
+        const sortedData = data[1]
         console.log('Fetched Data:', sortedData);
         setDataToShow(sortedData);
       } else {
@@ -288,7 +291,7 @@ const TablePage = () => {
           }
         }}
       />}
-      <section className="flex-col justify-center items-center space-y-6 pb-8 pt-6 md:pb-12 md:pt-10 lg:py-32">
+      <section className="flex-col justify-center items-center space-y-6 pb-8 pt-5 md:pb-12 md:pt-5 lg:pb-32 lg:pt-5">
       <div className="flex flex-col items-center px-40">
         <Card>
           <TabGroup
@@ -511,10 +514,10 @@ const TablePage = () => {
 
             <button
               onClick={() => setCurrentPage(currentPage + 1)}
-              className={`btn mt-4 ${dataToShow.length < pageSize ? 'invisible' : ''}`}
-              disabled={dataToShow.length < pageSize}
+              className={`btn mt-4 ${dataSize <= pageSize ? 'invisible' : ''}`}
+              disabled={dataSize <= pageSize}
               style={{ 
-                pointerEvents: dataToShow.length < pageSize ? 'none' : 'auto',
+                pointerEvents: dataSize <= pageSize ? 'none' : 'auto',
                 border: 'none',
                 background: 'transparent',
                 margin: '0px',
@@ -525,8 +528,6 @@ const TablePage = () => {
             </button>
           </div>
 
-
-  
 
         </Card>
       </div>
