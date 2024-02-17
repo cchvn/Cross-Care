@@ -291,7 +291,7 @@ if __name__ == "__main__":
 
     # Save the output
     output_dir = os.path.join(
-        pile_dir, model_name.replace("/", "_")
+        pile_dir, "logits", model_name.replace("/", "_")
     )  # Adjust for valid directory name
     os.makedirs(output_dir, exist_ok=True)
 
