@@ -211,25 +211,34 @@ if __name__ == "__main__":
         default=8,
         help="Batch size to use for parallel inference. Default: 8.",
     )
+    parser.add_argument(
+        "--device",
+        type=str,
+        default="cuda",
+        choices=["cuda", "cpu"],
+        help="Device to use for model inference: 'cuda' or 'cpu'. Default: 'cuda' if available.",
+    )
+    parser.add_argument(
+        "--dtype",
+        type=str,
+        default="float16",
+        choices=["float16", "float32"],
+        help="Data type to use for model inference: 'float16' or 'float32'. Default: 'float16'.",
+    )
 
     args = parser.parse_args()
 
     model_name = args.model_name
     demographic_choice = args.demographic
     batch_size = args.batch_size
+    device = args.device
+    dtype = args.dtype
 
     print(f"Using model: {model_name}")
     print(f"Analyzing based on: {demographic_choice}")
 
     # Determine if we're using a Mamba model
     is_mamba = args.model_name.startswith("state-spaces/mamba-")
-
-    # Configure device and dtype for model loading
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    if device.type == "cuda":
-        multiprocessing.set_start_method("spawn", force=True)
-    # device = "cpu"
-    dtype = torch.float16
 
     if is_mamba:
         # Load Mamba model and tokenizer
@@ -282,13 +291,18 @@ if __name__ == "__main__":
 
     # Save the output
     output_dir = os.path.join(
-        pile_dir, model_name.replace("/", "_")
+        pile_dir, "logits", model_name.replace("/", "_")
     )  # Adjust for valid directory name
     os.makedirs(output_dir, exist_ok=True)
 
     output_file_path = os.path.join(output_dir, f"logits_{demographic_choice}.json")
     with open(output_file_path, "w") as f:
         json.dump(a, f)
+
+    # clear memory
+    del model
+    torch.cuda.empty_cache()
+
 
 # Todo
 ## To use demographic keywords as round robin and maybe same for diseases as average
