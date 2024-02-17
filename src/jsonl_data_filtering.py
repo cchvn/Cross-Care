@@ -291,6 +291,9 @@ def jsonl_single_file_filtering(
     chunk_size = len(lines) // num_cores
     if len(lines) % num_cores != 0:
         num_cores += 1
+    print(f"Using {num_cores} cores")
+    print(f"Chunk size: {chunk_size}")
+    print(f"Total lines: {len(lines)}")
 
     chunks = [lines[i : i + chunk_size] for i in range(0, len(lines), chunk_size)]
 
@@ -323,6 +326,8 @@ def jsonl_single_file_filtering(
         list(medical_patterns.keys())
         + list(racial_patterns.keys())
         + list(gender_patterns.keys())
+        + list(drug_patterns.keys())
+        + list(cancer_patterns.keys())
     )
     for col in all_keyword_columns:
         if col not in df_output.columns:
