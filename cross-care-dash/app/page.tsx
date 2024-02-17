@@ -56,7 +56,7 @@ const IndexPage = () => {
                     color: "#E5E4E2",
                     width: '25px'
                   }}
-                ><a href="https://www.linkedin.com/company/mitcriticaldata/" target="_blank">
+                ><a href="https://www.linkedin.com/school/harvard-medical-school/" target="_blank">
                   <FontAwesomeIcon icon={faLinkedinIn} /> </a>
                 </div>
 
@@ -66,7 +66,7 @@ const IndexPage = () => {
                     color: '#E5E4E2',
                     width: '25px'
                   }}
-                ><a href="https://twitter.com/MITCriticalData" target="_blank">
+                ><a href="https://twitter.com/aim_harvard" target="_blank">
                   <FontAwesomeIcon icon={faXTwitter} /> </a>
                 </div>
               
