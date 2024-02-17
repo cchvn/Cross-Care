@@ -115,34 +115,32 @@ def calculate_log_softmax_batch(texts, tokenizer, model, device):
 
 
 def process_demographic_disease_combinations(
-    demographic_disease_combination, model, tokenizer, device
+    demographic_disease_combination, model, tokenizer, device, batch_size=8
 ):
     demographic, disease = demographic_disease_combination
     model.eval()
 
     statements = generate_statements_demographic(demographic, disease)
-    log_softmax_sums = calculate_log_softmax_batch(statements, tokenizer, model, device)
-    return disease, demographic, log_softmax_sums  # Return raw sums instead of average
+    all_log_softmax_sums = []
+
+    for i in range(0, len(statements), batch_size):
+        batch_statements = statements[i : i + batch_size]
+        batch_log_softmax_sums = calculate_log_softmax_batch(
+            batch_statements, tokenizer, model, device
+        )
+        all_log_softmax_sums.extend(batch_log_softmax_sums)
+
+    return disease, demographic, all_log_softmax_sums
 
 
-def eval_logits_parallel(demographics, diseases, model, tokenizer, device):
+def eval_logits(demographics, diseases, model, tokenizer, device, batch_size):
     results = {disease: [] for disease in diseases}
 
-    with ProcessPoolExecutor() as executor:
-        futures = [
-            executor.submit(
-                process_demographic_disease_combinations,
-                (demographic, disease),
-                model,
-                tokenizer,
-                device,
+    for disease in diseases:
+        for demographic in demographics:
+            _, _, log_softmax_values = process_demographic_disease_combinations(
+                (demographic, disease), model, tokenizer, device, batch_size
             )
-            for disease in diseases
-            for demographic in demographics
-        ]
-
-        for future in concurrent.futures.as_completed(futures):
-            disease, demographic, log_softmax_values = future.result()
             results[disease].append((demographic, log_softmax_values))
 
     return results
@@ -152,32 +150,26 @@ def calculate_average_log_softmax_per_demographic_disease(output):
     disease_averages = {}
     for disease, demographic_results in output.items():
         averages = {}
-        # Aggregate raw log softmax values for each demographic
         for demographic_result in demographic_results:
             demographic, log_softmax_values = demographic_result
             if demographic not in averages:
                 averages[demographic] = []
-            averages[demographic].extend(
-                log_softmax_values
-            )  # Extend to flatten all values into a single list
+            averages[demographic].extend(log_softmax_values)
 
-        # Calculate the overall average for each demographic for the current disease
         overall_averages = {
             demographic: sum(values) / len(values) if values else float("inf")
             for demographic, values in averages.items()
         }
 
-        # Sort the demographics by their overall average scores for the current disease
         sorted_averages = sorted(overall_averages.items(), key=lambda x: x[1])
         disease_averages[disease] = sorted_averages
 
     # Nicely print the results
     for disease, averages in disease_averages.items():
         print(f"Disease: {disease}")
-        for rank, (demographic, avg) in enumerate(averages, start=1):
-            print(f"  {rank}. {demographic}: {avg:.2f}")
+        for rank, (race, avg) in enumerate(averages, start=1):
+            print(f"  {rank}. {race}: {avg:.2f}")
         print()
-
     return disease_averages
 
 
@@ -213,11 +205,18 @@ if __name__ == "__main__":
         default="race",  # Default
         help="Demographic dimension to investigate: 'race' or 'gender'.",
     )
+    parser.add_argument(
+        "--batch_size",
+        type=int,
+        default=8,
+        help="Batch size to use for parallel inference. Default: 8.",
+    )
 
     args = parser.parse_args()
 
     model_name = args.model_name
     demographic_choice = args.demographic
+    batch_size = args.batch_size
 
     print(f"Using model: {model_name}")
     print(f"Analyzing based on: {demographic_choice}")
@@ -228,9 +227,9 @@ if __name__ == "__main__":
     # Configure device and dtype for model loading
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     if device.type == "cuda":
-        multiprocessing.set_start_method("spawn")
+        multiprocessing.set_start_method("spawn", force=True)
     # device = "cpu"
-    dtype = torch.float32  # Adjust as necessary
+    dtype = torch.float16
 
     if is_mamba:
         # Load Mamba model and tokenizer
@@ -270,15 +269,15 @@ if __name__ == "__main__":
     df = pd.read_csv(data_file)
     df = rename_disease(df)
     diseases = df["disease"].tolist()
-
     # debug
-    diseases = diseases[:2]
+    # diseases = diseases[:10]
 
     ###### Main logic ######
 
     # Evaluate logits and calculate averages for the chosen demographic
-    out = eval_logits_parallel(demographic_columns, diseases, model, tokenizer, device)
-
+    out = eval_logits(
+        demographic_columns, diseases, model, tokenizer, device, batch_size=batch_size
+    )
     a = calculate_average_log_softmax_per_demographic_disease(out)
 
     # Save the output
@@ -293,3 +292,11 @@ if __name__ == "__main__":
 
 # Todo
 ## To use demographic keywords as round robin and maybe same for diseases as average
+## Add flashattention to the model --> https://github.com/Dao-AILab/flash-attention
+## Plot the results
+## Add comparison for co-occurrences vs logits
+### raw vs normalised within subgroup cat
+### Check if ranking within subgroup cat is consistent with co-occurrences
+## R2 for co-occurrences vs logits
+## Rank by strength of association
+## Think of other synthetic data to generate
