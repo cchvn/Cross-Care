@@ -77,22 +77,19 @@ def transform_temporal_data(data, sort_order, TimeOption):
 @app.route("/get-sorted-data", methods=["GET"])
 def get_sorted_data():
     try:
+        # Extract parameters from the request
         category = request.args.get("category", "total")
         selectedWindow = request.args.get("selectedWindow", "total")
         sort_key = request.args.get("sortKey", "disease")
         sort_order = request.args.get("sortOrder", "asc")
         selectedDiseases = request.args.get("selectedDiseases", None)
+        selectedDataSource = request.args.get("dataSource", "arxiv")
 
-        # Construct the path to the correct data file based on category
+         # Construct the path to the correct data file based on category
         if category == "total":
-            data_file_path = os.path.join(
-                current_directory, f"../data/total_counts.json"
-            )
+            data_file_path = os.path.join(current_directory, f'../data/{selectedDataSource}/total_counts.json')
         else:
-            data_file_path = os.path.join(
-                current_directory, f"../data/{selectedWindow}_{category}_counts.json"
-            )
-
+            data_file_path = os.path.join(current_directory, f'../data/{selectedDataSource}/{selectedWindow}_{category}_counts.json')
         # Load the data from the correct file
         with open(data_file_path, "r") as file:
             category_data = json.load(file)
@@ -101,7 +98,6 @@ def get_sorted_data():
 
         # Sort data
         sorted_data = sort_data(category_data, sort_key, sort_order)
-        print(sorted_data)
 
         # Filter data by selected disease
         if selectedDiseases:
@@ -122,16 +118,6 @@ def get_sorted_data():
     except Exception as e:
         logging.error("An error occurred in get_sorted_data:", exc_info=True)
         return jsonify({"error": str(e)}), 500
-
-
-def transform_total_counts_for_chart(data):
-    chart_data = []
-    for item in data:
-        # Ensure 'disease' and '0' keys exist
-        if "disease" in item and "0" in item:
-            transformed_item = {"Disease": item["disease"], "Count": item["0"]}
-            chart_data.append(transformed_item)
-    return chart_data
 
 
 def filter_by_disease(sorted_data, selectedDiseases):
@@ -195,10 +181,15 @@ def extract_disease_names(data_file_path):
 
 @app.route("/get-disease-names", methods=["GET"])
 def get_disease_names():
-    data_file_path = os.path.join(current_directory, f"../data/total_counts.json")
-    disease_names = extract_disease_names(data_file_path)
-    return jsonify(disease_names)
-
+    try:
+        selectedDataSource = request.args.get("dataSource", "arxiv")
+        data_file_path = os.path.join(current_directory, f'../data/{selectedDataSource}/total_counts.json')
+        
+        disease_names = extract_disease_names(data_file_path)
+        return jsonify(disease_names)
+    except Exception as e:
+        logging.error("An error occurred in get_disease_names:", exc_info=True)
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/get-chart-data", methods=["GET"])
 def get_chart_data():
@@ -208,15 +199,17 @@ def get_chart_data():
         sort_key = request.args.get("sortKey", "disease")
         sort_order = request.args.get("sortOrder", "asc")
         selectedDiseases = request.args.get("selectedDiseases", None)
-
+        selectedDataSource = request.args.get("dataSource", "arxiv")
+        print("request.args")
+        print(request.args)
         # Construct the path to the correct data file based on category
         if category == "total":
             data_file_path = os.path.join(
-                current_directory, f"../data/total_counts.json"
+                current_directory, f"../data/{selectedDataSource}/total_counts.json"
             )
         else:
             data_file_path = os.path.join(
-                current_directory, f"../data/{selectedWindow}_{category}_counts.json"
+                current_directory, f"../data/{selectedDataSource}/{selectedWindow}_{category}_counts.json"
             )
 
         # Load the data from the correct file
@@ -248,15 +241,16 @@ def get_additional_chart_data():
         sort_key = request.args.get("sortKey", "disease")
         sort_order = request.args.get("sortOrder", "asc")
         selectedDiseases = request.args.get("selectedDiseases", None)
-
+        selectedDataSource = request.args.get("dataSource", "arxiv")
+    
         # Construct the path to the correct data file based on category
         if category == "total":
             additonal_data_path = os.path.join(
-                current_directory, f"../data/percentage_difference_gender.json"
+                current_directory, f"../data/{selectedDataSource}/percentage_difference_gender.json"
             )
         else:
             additonal_data_path = os.path.join(
-                current_directory, f"../data/percentage_difference_{category}.json"
+                current_directory, f"../data/{selectedDataSource}/percentage_difference_{category}.json"
             )
 
         with open(additonal_data_path, "r") as file:
@@ -287,10 +281,11 @@ def get_temporal_chart_data():
         )
         startYear = request.args.get("startYear", type=int)
         endYear = request.args.get("endYear", type=int)
+        selectedDataSource = request.args.get("dataSource", "arxiv")
 
         # Construct the path to the correct data file based on category
         temporal_data_path = os.path.join(
-            current_directory, f"../data/{TimeOption}_counts.json"
+            current_directory, f"../data/{selectedDataSource}/{TimeOption}_counts.json"
         )
         with open(temporal_data_path, "r") as file:
             temporal_data = json.load(file)

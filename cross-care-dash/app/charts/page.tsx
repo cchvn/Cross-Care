@@ -39,6 +39,13 @@ const WindowOptions = {
   Window250: 'window_250'
 };
 
+const DataSourceOptions = {
+  Arxiv: 'arxiv',
+  Github: 'github',
+  Wikipedia: 'wikipedia', // Change the URL to your custom data source endpoint
+  StackExchange: 'stackexchange'
+};
+
 const ChartPage = () => {
   const [selectedCategory, setSelectedCategory] = useState(
     DataCategories.GenderCounts
@@ -47,6 +54,7 @@ const ChartPage = () => {
   const [sortOrder, setSortOrder] = useState('asc');
   const [dataToShow, setDataToShow] = useState([]);
   const [selectedWindow, setSelectedWindow] = useState(WindowOptions.Total);
+  const [dataSource, setDataSource] = useState(DataSourceOptions.Arxiv); // State for selected data source
   const [selectedDiseases, setSelectedDiseases] = useState([]);
   const [diseaseNames, setDiseaseNames] = useState([]);
   const [isClient, setIsClient] = useState(false);
@@ -123,7 +131,7 @@ const ChartPage = () => {
 
   const fetchDiseaseNames = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:5000/get-disease-names');
+      const response = await fetch(`http://127.0.0.1:5000/get-disease-names?dataSource=${dataSource}`);
       if (response.ok) {
         const names = await response.json();
         setDiseaseNames(names);
@@ -146,10 +154,12 @@ const ChartPage = () => {
 
   // Function to fetch sorted data from the server
   const fetchChartData = async () => {
+    console.log(dataSource)
+    console.log(dataSource)
     const selectedDiseasesString = selectedDiseases.join(',');
     try {
       const response = await fetch(
-        `http://127.0.0.1:5000/get-chart-data?category=${selectedCategory}&selectedWindow=${selectedWindow}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}&selectedDiseases=${selectedDiseasesString}`
+        `http://127.0.0.1:5000/get-chart-data?category=${selectedCategory}&selectedWindow=${selectedWindow}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}&selectedDiseases=${selectedDiseasesString}&dataSource=${dataSource}`
       );
       if (response.ok) {
         const fetchedData = await response.json();
@@ -168,6 +178,7 @@ const ChartPage = () => {
   }, [
     selectedCategory,
     selectedWindow,
+    dataSource,
     sortKey,
     sortOrder,
     currentPage,
@@ -180,7 +191,7 @@ const ChartPage = () => {
     const selectedDiseasesString = selectedDiseases.join(',');
     try {
       const response = await fetch(
-        `http://127.0.0.1:5000/get-additional-chart-data?category=${selectedCategory}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}&selectedDiseases=${selectedDiseasesString}`
+        `http://127.0.0.1:5000/get-additional-chart-data?category=${selectedCategory}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}&selectedDiseases=${selectedDiseasesString}&dataSource=${dataSource}`
       );
       if (response.ok) {
         const fetchedData = await response.json();
@@ -397,6 +408,19 @@ const ChartPage = () => {
               {renderSortKeyOptions()}
             </Select>
 
+            {/* Data Source Dropdown */}
+            <Select
+              value={dataSource}
+              onValueChange={setDataSource}
+              style={{ flex: '20%' , marginLeft: '20px'}}
+            >
+              {Object.entries(DataSourceOptions).map(([key, value]) => (
+                <SelectItem key={key} value={value}>
+                  {key}
+                </SelectItem>
+              ))}
+            </Select>
+
             {/* Sort Order Button */}
             <button
               onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
@@ -482,12 +506,25 @@ const ChartPage = () => {
             >
               {renderSortKeyOptions()}
             </Select>
+            
+            {/* Data Source Dropdown */}
+            <Select
+              value={dataSource}
+              onValueChange={setDataSource}
+              style={{ flex: '20%' , marginLeft: '40px'}}
+            >
+              {Object.entries(DataSourceOptions).map(([key, value]) => (
+                <SelectItem key={key} value={value}>
+                  {key}
+                </SelectItem>
+              ))}
+            </Select>
 
             {/* Sort Order Button */}
             <button
               onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
               className="btn mt4"
-              style={{ flex: '20%', marginLeft: '20px' }}
+              style={{  marginTop: "0px", flex: '20%', marginLeft: '20px', alignSelf:"center"}}
             >
               {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
             </button>

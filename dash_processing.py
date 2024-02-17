@@ -249,8 +249,9 @@ def process_percentage_difference(out_dir, demo_cat, census_dict):
 
 if __name__ == "__main__":
     # paths
-    count_dir = "output_github"
-    out_dir = "cross-care-dash/app/data/github"
+
+    count_dir = "output_stackexchange"
+    out_dir = "cross-care-dash/app/data/stackexchange"
 
     # window sizes
     window_sizes = [10, 50, 100, 250]

@@ -37,6 +37,12 @@ const WindowOptions = {
   Window250: 'window_250'
 };
 
+const DataSourceOptions = {
+  Arxiv: 'arxiv',
+  Github: 'github',
+  Wikipedia: 'wikipedia', // Change the URL to your custom data source endpoint
+  StackExchange: 'stackexchange'
+};
 
 const TablePage = () => {
   const [selectedCategory, setSelectedCategory] = useState(
@@ -46,6 +52,7 @@ const TablePage = () => {
   const [sortOrder, setSortOrder] = useState('asc'); // Default sort order
   const [dataToShow, setDataToShow] = useState([]);
   const [selectedWindow, setSelectedWindow] = useState(WindowOptions.Total);
+  const [dataSource, setDataSource] = useState(DataSourceOptions.Arxiv); // State for selected data source
   const [selectedDiseases, setSelectedDiseases] = useState([]);
   const [diseaseNames, setDiseaseNames] = useState([]);
   const [isClient, setIsClient] = useState(false);
@@ -125,7 +132,7 @@ const TablePage = () => {
 
   const fetchDiseaseNames = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:5000/get-disease-names');
+      const response = await fetch(`http://127.0.0.1:5000/get-disease-names?dataSource=${dataSource}`);
       if (response.ok) {
         const names = await response.json();
         setDiseaseNames(names);
@@ -148,7 +155,7 @@ const TablePage = () => {
     const selectedDiseasesString = selectedDiseases.join(',');
     try {
       const response = await fetch(
-        `http://127.0.0.1:5000/get-sorted-data?category=${selectedCategory}&selectedWindow=${selectedWindow}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}&selectedDiseases=${selectedDiseasesString}`
+        `http://127.0.0.1:5000/get-sorted-data?category=${selectedCategory}&selectedWindow=${selectedWindow}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}&selectedDiseases=${selectedDiseasesString}&dataSource=${dataSource}`
       );
       if (response.ok) {
         const data = await response.json();
@@ -179,6 +186,7 @@ const TablePage = () => {
   }, [
     selectedCategory,
     selectedWindow,
+    dataSource,
     sortKey,
     sortOrder,
     currentPage,
@@ -348,6 +356,19 @@ const TablePage = () => {
               style={{ flex: '20%' , marginLeft: '40px'}}
             >
               {Object.entries(WindowOptions).map(([key, value]) => (
+                <SelectItem key={key} value={value}>
+                  {key}
+                </SelectItem>
+              ))}
+            </Select>
+
+            {/* Data Source Dropdown */}
+            <Select
+              value={dataSource}
+              onValueChange={setDataSource}
+              style={{ flex: '20%' , marginLeft: '40px'}}
+            >
+              {Object.entries(DataSourceOptions).map(([key, value]) => (
                 <SelectItem key={key} value={value}>
                   {key}
                 </SelectItem>

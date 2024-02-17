@@ -56,6 +56,13 @@ const initialDiseaseList = [
   'infection'
 ];
 
+const DataSourceOptions = {
+  Arxiv: 'arxiv',
+  Github: 'github',
+  Wikipedia: 'wikipedia', // Change the URL to your custom data source endpoint
+  StackExchange: 'stackexchange'
+};
+
 const ChartPage = () => {
   const [selectedCategory, setSelectedCategory] = useState(
     DataCategories.TotalCounts
@@ -65,6 +72,7 @@ const ChartPage = () => {
   const [selectedWindow, setSelectedWindow] = useState(WindowOptions.Total);
   const [selectedTime, setTime] = useState(TimeOptions.Yearly);
   const [selectedDiseases, setSelectedDiseases] = useState([]);
+  const [dataSource, setDataSource] = useState(DataSourceOptions.Arxiv); // State for selected data source
   const [diseaseNames, setDiseaseNames] = useState([]);
   const [yearStart, setYearStart] = useState(new Date().getFullYear() - 10); // 5 years ago as default
   const [yearEnd, setYearEnd] = useState(new Date().getFullYear()); // Current year as default
@@ -103,7 +111,7 @@ const ChartPage = () => {
 
   const fetchDiseaseNames = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:5000/get-disease-names');
+      const response = await fetch(`http://127.0.0.1:5000/get-disease-names?dataSource=${dataSource}`);
       if (response.ok) {
         const names = await response.json();
         setDiseaseNames(names);
@@ -131,7 +139,7 @@ const ChartPage = () => {
     const selectedDiseasesString = selectedDiseases.join(',');
     try {
       const response = await fetch(
-        `http://127.0.0.1:5000/get-temporal-chart-data?category=${selectedCategory}&timeOption=${selectedTime}&sortKey=${sortKey}&sortOrder=${sortOrder}&startYear=${yearStart}&endYear=${yearEnd}&selectedDiseases=${selectedDiseasesString}`
+        `http://127.0.0.1:5000/get-temporal-chart-data?category=${selectedCategory}&timeOption=${selectedTime}&sortKey=${sortKey}&sortOrder=${sortOrder}&startYear=${yearStart}&endYear=${yearEnd}&selectedDiseases=${selectedDiseasesString}&dataSource=${dataSource}`
       );
       if (response.ok) {
         const fetchedData = await response.json();
@@ -152,6 +160,7 @@ const ChartPage = () => {
     selectedTime,
     sortKey,
     sortOrder,
+    dataSource,
     currentPage,
     selectedDiseases,
     yearStart,
@@ -326,6 +335,19 @@ const ChartPage = () => {
                 </MultiSelectItem>
               ))}
             </MultiSelect>
+
+            {/* Data Source Dropdown */}
+            <Select
+              value={dataSource}
+              onValueChange={setDataSource}
+              style={{ flex: '20%' , marginLeft: '20px'}}
+            >
+              {Object.entries(DataSourceOptions).map(([key, value]) => (
+                <SelectItem key={key} value={value}>
+                  {key}
+                </SelectItem>
+              ))}
+            </Select>
 
             {/* Time Option Select */}
             <Select
