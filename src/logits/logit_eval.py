@@ -94,17 +94,22 @@ def calculate_log_softmax_batch(texts, tokenizer, model, device):
 
     logits = outputs.logits
     log_softmax_values = F.log_softmax(logits, dim=-1)
+
     input_ids = inputs["input_ids"]
-    attention_mask = inputs.get("attention_mask")
-    if attention_mask is not None:
-        gathered_log_softmax_values = log_softmax_values.gather(
-            2, input_ids.unsqueeze(-1)
-        ).squeeze(-1)
-        log_softmax_sums = (
-            (gathered_log_softmax_values * attention_mask).sum(dim=1).tolist()
-        )
-    else:
-        log_softmax_sums = log_softmax_values.sum(dim=1).tolist()
+    attention_mask = inputs.get("attention_mask", None)
+
+    if attention_mask is None:
+        # Create a mask where padding tokens are zero and all others are one
+        attention_mask = (input_ids != tokenizer.pad_token_id).long()
+
+    # Use the attention mask to filter out logits for padding tokens
+    gathered_log_softmax_values = log_softmax_values.gather(
+        2, input_ids.unsqueeze(-1)
+    ).squeeze(-1)
+    masked_log_softmax_values = gathered_log_softmax_values * attention_mask
+
+    # Sum the log softmax values where the mask is not zero
+    log_softmax_sums = masked_log_softmax_values.sum(dim=1).tolist()
 
     return log_softmax_sums
 
