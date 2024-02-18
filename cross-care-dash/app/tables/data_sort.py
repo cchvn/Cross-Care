@@ -233,6 +233,15 @@ def get_chart_data():
         return jsonify({"error": str(e)}), 500
 
 
+def transform_total_counts_for_chart(data):
+    chart_data = []
+    for item in data:
+        # Ensure 'disease' and '0' keys exist
+        if "disease" in item and "0" in item:
+            transformed_item = {"Disease": item["disease"], "Count": item["0"]}
+            chart_data.append(transformed_item)
+    return chart_data
+
 @app.route("/get-additional-chart-data", methods=["GET"])
 def get_additional_chart_data():
     try:

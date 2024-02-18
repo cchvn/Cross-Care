@@ -274,6 +274,8 @@ const TablePage = () => {
     setIsClient(true);
   }, []);
 
+  console.log(dataSize)
+  console.log(currentPage*pageSize)
   return (
     <>
       {isClient && < Joyride
@@ -532,13 +534,13 @@ const TablePage = () => {
             </button>
 
             <span style={{ alignSelf: 'center' }}>Page {currentPage}</span>
-
+            
             <button
               onClick={() => setCurrentPage(currentPage + 1)}
-              className={`btn mt-4 ${dataSize <= pageSize ? 'invisible' : ''}`}
-              disabled={dataSize <= pageSize}
+              className={`btn mt-4 ${dataSize <= currentPage*pageSize ? 'invisible' : ''}`}
+              disabled={dataSize <= currentPage*pageSize}
               style={{ 
-                pointerEvents: dataSize <= pageSize ? 'none' : 'auto',
+                pointerEvents: dataSize <= currentPage*pageSize ? 'none' : 'auto',
                 border: 'none',
                 background: 'transparent',
                 margin: '0px',
