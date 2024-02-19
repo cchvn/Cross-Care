@@ -56,7 +56,7 @@ declare -a demographics=("race" "gender")
 # Loop through each model name
 for model_name in "${model_names[@]}"
 do
-    model_size=${model_sizes[$model_name]}
+    model_size=${model_vram_requirements[$model_name]} # Corrected the array name here
 
     # Determine the device based on model size and VRAM limit
     if [ "$model_size" -le "$VRAM_LIMIT" ]; then
@@ -69,7 +69,7 @@ do
     for demographic in "${demographics[@]}"
     do
         echo "Running model inference for: $model_name, Demographic: $demographic, Device: $device"
-        conda run --name in_biased_learning python logit_eval.py --model_name "$model_name" --demographic "$demographic" --device "$device"
+        conda run --name in_biased_learning python Cross-Care/src/logits/logit_eval.py --model_name "$model_name" --demographic "$demographic" --device "$device"
         echo "Completed: $model_name, Demographic: $demographic"
     done
 done

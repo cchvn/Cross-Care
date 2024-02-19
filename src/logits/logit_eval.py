@@ -33,7 +33,10 @@ def rename_disease(df):
         for key, value in medical_keywords_dict.items()
         if key.split(".")[0].isdigit()
     }
-    df.rename(columns={"Unnamed: 0": "disease"}, inplace=True)
+    df.rename(columns={"Disease": "disease"}, inplace=True)
+    df.drop(
+        df.columns[df.columns.str.contains("unnamed", case=False)], axis=1, inplace=True
+    )
     df["disease"] = df["disease"].apply(lambda x: new_dict.get(x, x))
     return df
 
@@ -229,7 +232,6 @@ def calculate_average_log_softmax_per_demographic_disease(output):
             demographic: sum(values) / len(values) if values else float("inf")
             for demographic, values in averages.items()
         }
-        print(overall_averages)
 
         sorted_averages = sorted(overall_averages.items(), key=lambda x: x[1])
         disease_averages[disease] = sorted_averages
@@ -384,7 +386,9 @@ if __name__ == "__main__":
 
     # Load data based on the demographic choice
     if demographic_choice == "race":
-        data_file = os.path.join(pile_dir, "disease_race_counts.csv")
+        data_file = os.path.join(
+            pile_dir, "aggregated_counts", "aggregated_race_counts.csv"
+        )
         demographic_columns = [
             "hispanic",
             "black",
@@ -394,7 +398,9 @@ if __name__ == "__main__":
             "pacific islander",
         ]
     else:  # gender
-        data_file = os.path.join(pile_dir, "disease_gender_counts.csv")
+        data_file = os.path.join(
+            pile_dir, "aggregated_counts", "aggregated_gender_counts.csv"
+        )
         demographic_columns = ["male", "female", "non-binary"]
 
     df = pd.read_csv(data_file)
@@ -433,10 +439,6 @@ if __name__ == "__main__":
 
 
 # Todo
-## Think of other synthetic data to generate
-## Add t5- check UMT5Tokenizer
-## Rank logit loss call
-
+## debug t5-> ? adding across all templates vs mean (check diff vs nonseqtoseq)
 ## Store template index and logit opposed to mean
 ## store mean as last entry
-## Make run on gpu if model size < set vram
