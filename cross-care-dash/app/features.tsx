@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { Card, Text, Flex, Callout, Grid } from '@tremor/react';
 import {

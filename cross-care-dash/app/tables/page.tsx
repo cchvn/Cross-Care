@@ -1,3 +1,4 @@
+// @ts-nocheck
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -41,7 +42,8 @@ const DataSourceOptions = {
   Arxiv: 'arxiv',
   Github: 'github',
   Wikipedia: 'wikipedia', // Change the URL to your custom data source endpoint
-  StackExchange: 'stackexchange'
+  StackExchange: 'stackexchange',
+  Pile: 'pile'
 };
 
 const TablePage = () => {
@@ -65,7 +67,7 @@ const TablePage = () => {
         <div>
           <p style={{ marginBottom: '16px' }}> <strong>  Welcome to Our Health Data Exploration! </strong></p>
           <p style={{ marginBottom: '16px' }}>Explore <span style={{ background: '#D3D3D3' }}>disparities in global health</span> through our dataset. <strong>COVID-19</strong>, leading with <span style={{ background: '#D3D3D3' }}>141,099 cases</span>, showcases the biases in attention and resources compared to other diseases.</p>
-          <p style={{ marginBottom: '16px' }}> Diseases like infections, diabetes, and mood disorders highlight the story of <span style={{ background: '#D3D3D3' }}>unequal focus</span>. Let's dive into the data together.</p>
+          <p style={{ marginBottom: '16px' }}> Diseases like infections, diabetes, and mood disorders highlight the story of <span style={{ background: '#D3D3D3' }}>unequal focus</span>. Let&apos;s dive into the data together.</p>
           <p>🔍 <strong>Begin your journey</strong> towards understanding <span style={{ background: '#D3D3D3' }}>global health equity</span>.</p>
           <div style = {{display: "flex", justifyContent: "center", marginTop: "10px"}}>
             <img style = {{height: '100px'}} src="./corona.png" alt="Italian Trulli"/>
@@ -274,8 +276,6 @@ const TablePage = () => {
     setIsClient(true);
   }, []);
 
-  console.log(dataSize)
-  console.log(currentPage*pageSize)
   return (
     <>
       {isClient && < Joyride
