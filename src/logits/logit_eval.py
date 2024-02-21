@@ -367,7 +367,7 @@ if __name__ == "__main__":
         tokenizer = AutoTokenizer.from_pretrained(
             "oobabooga/llama-tokenizer", cache_dir=tokenizer_cache_dir
         )
-        model = T5ForConditionalGeneration.from_pretrained("EleutherAI/t5-v2-base")
+        model = T5ForConditionalGeneration.from_pretrained(model_name)
     else:
         # Load the specified model and tokenizer as before
         tokenizer = AutoTokenizer.from_pretrained(
