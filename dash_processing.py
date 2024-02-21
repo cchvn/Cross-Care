@@ -110,9 +110,9 @@ def process_total_counts(csv_path, medical_keywords_dict):
 
 def process_demo_counts(count_dir, medical_keywords_dict, demo_cat):
     if demo_cat != "racial":  # BUG: with racial naming convention
-        csv_path = f"{count_dir}/disease_{demo_cat}_counts.csv"
+        csv_path = f"{count_dir}/aggregated_{demo_cat}_counts.csv"
     else:
-        csv_path = f"{count_dir}/disease_race_counts.csv"
+        csv_path = f"{count_dir}/aggregated_race_counts.csv"
 
     df = pd.read_csv(csv_path)
     df = df.rename(columns={"Unnamed: 0": "disease"})
@@ -250,8 +250,8 @@ def process_percentage_difference(out_dir, demo_cat, census_dict):
 if __name__ == "__main__":
     # paths
 
-    count_dir = "output_stackexchange"
-    out_dir = "cross-care-dash/app/data/stackexchange"
+    count_dir = "output_pile/aggregated_counts"
+    out_dir = "cross-care-dash/app/data/pile"
 
     # window sizes
     window_sizes = [10, 50, 100, 250]
@@ -260,11 +260,11 @@ if __name__ == "__main__":
     #### TOTAL COUNTS ####
 
     # Process total counts
-    total_counts_data = process_total_counts(
-        csv_path=f"{count_dir}/total_disease_counts.csv",
-        medical_keywords_dict=medical_keywords_dict,
-    )
-    write_to_json(total_counts_data, f"{out_dir}/total_counts.json")
+    # total_counts_data = process_total_counts(
+    #     csv_path=f"{count_dir}/total_disease_counts.csv",
+    #     medical_keywords_dict=medical_keywords_dict,
+    # )
+    # write_to_json(total_counts_data, f"{out_dir}/total_counts.json")
 
     # Process demographic co-occurrence counts
     total_counts_dict = (
@@ -277,52 +277,52 @@ if __name__ == "__main__":
             medical_keywords_dict=medical_keywords_dict,
             demo_cat=demo,
         )
-        write_to_json(total_counts_dict[demo], f"{out_dir}/total_{demo}_counts.json")
+        write_to_json(total_counts_dict[demo], f"{out_dir}/aggregated_{demo}_counts.json")
 
     # Process date co-occurrence counts
-    total_dates_data = process_temporal_counts(
-        csv_path=f"{count_dir}/disease_date_counts.csv",
-        medical_keywords_dict=medical_keywords_dict,
-    )
-    write_temporal_to_json(
-        total_dates_data["monthly"], f"{out_dir}/monthly_counts.json"
-    )
-    write_temporal_to_json(total_dates_data["yearly"], f"{out_dir}/yearly_counts.json")
-    write_temporal_to_json(
-        total_dates_data["five_yearly"],
-        f"{out_dir}/five_yearly_counts.json",
-    )
+    # total_dates_data = process_temporal_counts(
+    #     csv_path=f"{count_dir}/disease_date_counts.csv",
+    #     medical_keywords_dict=medical_keywords_dict,
+    # )
+    # write_temporal_to_json(
+    #     total_dates_data["monthly"], f"{out_dir}/monthly_counts.json"
+    # )
+    # write_temporal_to_json(total_dates_data["yearly"], f"{out_dir}/yearly_counts.json")
+    # write_temporal_to_json(
+    #     total_dates_data["five_yearly"],
+    #     f"{out_dir}/five_yearly_counts.json",
+    # )
 
     # #### SUBGROUP COUNTS ####
 
     # Process subgroup counts and percentage difference
-    window_subgroup_dict = {}
+    # window_subgroup_dict = {}
 
-    for window_size in window_sizes:
-        for demo in demo_cat:
-            filename = f"{count_dir}/window_{window_size}/co_occurrence_{demo}.csv"
+    # for window_size in window_sizes:
+    #     for demo in demo_cat:
+    #         filename = f"{count_dir}/window_{window_size}/co_occurrence_{demo}.csv"
 
-            # Process subgroup counts
-            subgroup_counts_data = process_subgroup_counts(
-                csv_path=filename, medical_keywords_dict=medical_keywords_dict
-            )
+    #         # Process subgroup counts
+    #         subgroup_counts_data = process_subgroup_counts(
+    #             csv_path=filename, medical_keywords_dict=medical_keywords_dict
+    #         )
 
-            write_to_json(
-                subgroup_counts_data,
-                f"{out_dir}/window_{window_size}_{demo}_counts.json",
-            )
+    #         write_to_json(
+    #             subgroup_counts_data,
+    #             f"{out_dir}/window_{window_size}_{demo}_counts.json",
+    #         )
 
     #### PERCENTAGE DIFFERENCE ####
 
-    for demo in demo_cat[:2]:
-        percentage_difference_data = process_percentage_difference(
-            out_dir=out_dir,
-            demo_cat=demo,
-            census_dict=census_dict,
-        )
-        write_to_json(
-            percentage_difference_data,
-            f"{out_dir}/percentage_difference_{demo}.json",
-        )
+    # for demo in demo_cat[:2]:
+    #     percentage_difference_data = process_percentage_difference(
+    #         out_dir=out_dir,
+    #         demo_cat=demo,
+    #         census_dict=census_dict,
+    #     )
+    #     write_to_json(
+    #         percentage_difference_data,
+    #         f"{out_dir}/percentage_difference_{demo}.json",
+    #     )
 
     print("Done!")
