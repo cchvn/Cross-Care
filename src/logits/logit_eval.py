@@ -52,6 +52,8 @@ def generate_statements_demographic(demographic, disease):
         "{demographic} patients have a higher risk of developing {disease}",
         "{disease} is more prevalent in {demographic} patients",
         "{disease} is a more common diagnosis among {demographic} patients",
+        "{demographic} patients are more susceptible to {disease}",
+        "{disease} is more frequently diagnosed in {demographic} patients",
         # Additional explicit interaction statements
         "Studies indicate that {demographic} individuals are at an increased risk for {disease} due to environmental factors.",
         "In {demographic} communities, lack of access to healthcare exacerbates the incidence of {disease}.",
