@@ -22,9 +22,8 @@ import {
 } from '@tremor/react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDownload, faInfoCircle} from '@fortawesome/free-solid-svg-icons';
+import { faDownload, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import Joyride, { CallBackProps, STATUS, Step } from 'react-joyride';
-
 
 const DataCategories = {
   TotalCounts: 'total',
@@ -83,18 +82,18 @@ const ChartPage = () => {
     {
       target: 'body',
       content: 'Use these tabs to switch between different data categories.',
-      placement: 'center',
+      placement: 'center'
     },
     {
       target: '.multi-select',
       content: 'Select one or more diseases to filter the chart data.',
-      placement: 'bottom',
+      placement: 'bottom'
     },
     {
       target: '.bar-chart',
       content: 'View the distribution of data across selected diseases.',
-      placement: 'top',
-    },
+      placement: 'top'
+    }
     // Add more steps as needed
   ]);
 
@@ -112,7 +111,9 @@ const ChartPage = () => {
 
   const fetchDiseaseNames = async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:5000/get-disease-names?dataSource=${dataSource}`);
+      const response = await fetch(
+        `https://cryptic-forest-27973-570a247a72c1.herokuapp.com/get-disease-names?dataSource=${dataSource}`
+      );
       if (response.ok) {
         const names = await response.json();
         setDiseaseNames(names);
@@ -140,7 +141,7 @@ const ChartPage = () => {
     const selectedDiseasesString = selectedDiseases.join(',');
     try {
       const response = await fetch(
-        `http://127.0.0.1:5000/get-temporal-chart-data?category=${selectedCategory}&timeOption=${selectedTime}&sortKey=${sortKey}&sortOrder=${sortOrder}&startYear=${yearStart}&endYear=${yearEnd}&selectedDiseases=${selectedDiseasesString}&dataSource=${dataSource}`
+        `https://cryptic-forest-27973-570a247a72c1.herokuapp.com/get-temporal-chart-data?category=${selectedCategory}&timeOption=${selectedTime}&sortKey=${sortKey}&sortOrder=${sortOrder}&startYear=${yearStart}&endYear=${yearEnd}&selectedDiseases=${selectedDiseasesString}&dataSource=${dataSource}`
       );
       if (response.ok) {
         const fetchedData = await response.json();
@@ -233,24 +234,23 @@ const ChartPage = () => {
   const downloadJsonData = () => {
     // Create a JSON string from the temporalChartData
     const jsonData = JSON.stringify(temporalChartData);
-  
+
     // Create a Blob object containing the JSON data
     const blob = new Blob([jsonData], { type: 'application/json' });
-  
+
     // Create a download link element
     const a = document.createElement('a');
     a.href = window.URL.createObjectURL(blob);
-  
+
     // Determine the filename based on the data
     const filename = 'temporalChartData.json'; // You can change the filename as needed
     a.download = filename;
-  
+
     // Trigger a click event to initiate the download
     a.click();
   };
-  
 
-  const renderDownloadButton = ( onClickHandler) => {
+  const renderDownloadButton = (onClickHandler) => {
     return (
       <button
         onClick={onClickHandler}
@@ -258,7 +258,7 @@ const ChartPage = () => {
           backgroundColor: 'white',
           color: 'black',
           flex: '20px',
-          marginLeft: '10px',
+          marginLeft: '10px'
         }}
         className="btn mt-4"
         title="Download JSON Data"
@@ -274,145 +274,157 @@ const ChartPage = () => {
 
   return (
     <>
-    {isClient && (<Joyride
-        continuous
-        run={runTour}
-        scrollToFirstStep
-        showProgress
-        showSkipButton
-        steps={steps}
-        callback={handleJoyrideCallback}
-        styles={{
-          options: {
-            zIndex: 10000, // Ensure Joyride tooltip is above other elements
-          },
-        }}
-      />)}
-    <section className="flex-col justify-center items-center space-y-6 pb-8 pt-5 md:pb-12 md:pt-5 lg:pb-32 lg:pt-5">
-      <div className="flex flex-col items-center px-40">
-        <Card>
-          <TabGroup
-            index={Object.values(DataCategories).indexOf(selectedCategory)}
-            onIndexChange={(index) =>
-              setSelectedCategory(Object.values(DataCategories)[index])
+      {isClient && (
+        <Joyride
+          continuous
+          run={runTour}
+          scrollToFirstStep
+          showProgress
+          showSkipButton
+          steps={steps}
+          callback={handleJoyrideCallback}
+          styles={{
+            options: {
+              zIndex: 10000 // Ensure Joyride tooltip is above other elements
             }
-          >
-            <TabList className="mb-4" variant="line">
-              <Tab>Total Counts</Tab>
-              <button
-                onClick={() => window.location.href = 'http://localhost:3000/docs'} // Replace this with your actual documentation page URL
-                style={{
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: 'inherit', // Adjust color to fit your design
-                }}
-                title="Documentation"
+          }}
+        />
+      )}
+      <section className="flex-col justify-center items-center space-y-6 pb-8 pt-5 md:pb-12 md:pt-5 lg:pb-32 lg:pt-5">
+        <div className="flex flex-col items-center px-40">
+          <Card>
+            <TabGroup
+              index={Object.values(DataCategories).indexOf(selectedCategory)}
+              onIndexChange={(index) =>
+                setSelectedCategory(Object.values(DataCategories)[index])
+              }
+            >
+              <TabList className="mb-4" variant="line">
+                <Tab>Total Counts</Tab>
+                <button
+                  onClick={() =>
+                    (window.location.href = 'http://localhost:3000/docs')
+                  } // Replace this with your actual documentation page URL
+                  style={{
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: 'inherit' // Adjust color to fit your design
+                  }}
+                  title="Documentation"
+                >
+                  <FontAwesomeIcon icon={faInfoCircle} size="lg" />{' '}
+                  {/* You can adjust the size (lg, 2x, etc.) */}
+                </button>
+              </TabList>
+            </TabGroup>
+            <Title>Representation Trends</Title>
+            <Subtitle>Disease counts over time.</Subtitle>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flex: '70%'
+              }}
+            >
+              {/* Disease MultiSelect with value bound to selectedDiseases */}
+              <MultiSelect
+                value={selectedDiseases}
+                onValueChange={setSelectedDiseases}
+                placeholder="Select Diseases"
+                style={{ flex: '50%' }}
               >
-                <FontAwesomeIcon icon={faInfoCircle} size="lg" /> {/* You can adjust the size (lg, 2x, etc.) */}
+                {diseaseNames.map((disease) => (
+                  <MultiSelectItem key={disease} value={disease}>
+                    {disease}
+                  </MultiSelectItem>
+                ))}
+              </MultiSelect>
+
+              {/* Data Source Dropdown */}
+              <Select
+                value={dataSource}
+                onValueChange={setDataSource}
+                style={{ flex: '20%', marginLeft: '20px' }}
+              >
+                {Object.entries(DataSourceOptions).map(([key, value]) => (
+                  <SelectItem key={key} value={value}>
+                    {key}
+                  </SelectItem>
+                ))}
+              </Select>
+
+              {/* Time Option Select */}
+              <Select
+                value={selectedTime}
+                onValueChange={setTime}
+                placeholder="Select Time Option"
+                style={{ marginLeft: '10px', flex: '10%' }}
+              >
+                {Object.keys(TimeOptions).map((option) => (
+                  <SelectItem key={option} value={TimeOptions[option]}>
+                    {option}
+                  </SelectItem>
+                ))}
+              </Select>
+
+              {/* Year Start Input */}
+              <div style={{ marginLeft: '10px' }} className="input-wrapper">
+                <NumberInput
+                  icon={CalendarIcon}
+                  placeholder="Start Year"
+                  value={yearStart}
+                  onChange={(e) => setYearStart(e.target.value)}
+                  min={2000} // Set minimum year as required
+                  max={yearEnd} // Maximum is the end year
+                />
+              </div>
+
+              {/* Year End Input */}
+              <div style={{ marginLeft: '10px' }} className="input-wrapper">
+                <NumberInput
+                  icon={CalendarIcon}
+                  placeholder="End Year"
+                  value={yearEnd}
+                  onChange={(e) => setYearEnd(e.target.value)}
+                  min={yearStart} // Minimum is the start year
+                  max={new Date().getFullYear()} // Set maximum year as the current year
+                />
+              </div>
+
+              {/* Sort Order Button */}
+              <button
+                onClick={() =>
+                  setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
+                }
+                className="btn mt4"
+                style={{
+                  flex: '20%',
+                  marginLeft: '10px',
+                  padding: '10px',
+                  marginTop: '0px'
+                }}
+              >
+                {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
               </button>
-            </TabList>
-          </TabGroup>
-          <Title>Representation Trends</Title>
-          <Subtitle>Disease counts over time.</Subtitle>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flex: '70%'
-            }}
-          >
-            {/* Disease MultiSelect with value bound to selectedDiseases */}
-            <MultiSelect
-              value={selectedDiseases}
-              onValueChange={setSelectedDiseases}
-              placeholder="Select Diseases"
-              style={{ flex: '50%' }}
-            >
-              {diseaseNames.map((disease) => (
-                <MultiSelectItem key={disease} value={disease}>
-                  {disease}
-                </MultiSelectItem>
-              ))}
-            </MultiSelect>
 
-            {/* Data Source Dropdown */}
-            <Select
-              value={dataSource}
-              onValueChange={setDataSource}
-              style={{ flex: '20%' , marginLeft: '20px'}}
-            >
-              {Object.entries(DataSourceOptions).map(([key, value]) => (
-                <SelectItem key={key} value={value}>
-                  {key}
-                </SelectItem>
-              ))}
-            </Select>
-
-            {/* Time Option Select */}
-            <Select
-              value={selectedTime}
-              onValueChange={setTime}
-              placeholder="Select Time Option"
-              style={{ marginLeft: "10px", flex: '10%' }}
-            >
-              {Object.keys(TimeOptions).map((option) => (
-                <SelectItem key={option} value={TimeOptions[option]}>
-                  {option}
-                </SelectItem>
-              ))}
-            </Select>
-
-            {/* Year Start Input */}
-            <div style={{marginLeft: "10px"}} className="input-wrapper">
-              <NumberInput
-                icon={CalendarIcon}
-                placeholder="Start Year"
-                value={yearStart}
-                onChange={(e) => setYearStart(e.target.value)}
-                min={2000} // Set minimum year as required
-                max={yearEnd} // Maximum is the end year
-              />
+              {/* Download Button with Icon */}
+              {renderDownloadButton(() => downloadJsonData())}
             </div>
-
-            {/* Year End Input */}
-            <div style={{marginLeft: "10px"}} className="input-wrapper">
-              <NumberInput
-                icon={CalendarIcon}
-                placeholder="End Year"
-                value={yearEnd}
-                onChange={(e) => setYearEnd(e.target.value)}
-                min={yearStart} // Minimum is the start year
-                max={new Date().getFullYear()} // Set maximum year as the current year
-              />
-            </div>
-
-            {/* Sort Order Button */}
-            <button
-              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-              className="btn mt4"
-              style={{ flex: '20%', marginLeft: '10px', padding: '10px', marginTop: "0px"}}
-            >
-              {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
-            </button>
-
-            {/* Download Button with Icon */}
-            {renderDownloadButton(() => downloadJsonData())}
-          </div>
-          <LineChart
-            className="mt-4 h-80"
-            data={temporalChartData}
-            index="date"
-            categories={selectedDiseases}
-            colors={chartColors}
-            yAxisWidth={60}
-            enableLegendSlider={true} // Use the state here
-            showAnimation={true}
-          />
-        </Card>
-      </div>
-    </section>
+            <LineChart
+              className="mt-4 h-80"
+              data={temporalChartData}
+              index="date"
+              categories={selectedDiseases}
+              colors={chartColors}
+              yAxisWidth={60}
+              enableLegendSlider={true} // Use the state here
+              showAnimation={true}
+            />
+          </Card>
+        </div>
+      </section>
     </>
   );
 };

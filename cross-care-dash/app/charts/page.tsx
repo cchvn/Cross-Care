@@ -20,9 +20,8 @@ import {
 } from '@tremor/react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDownload, faInfoCircle} from '@fortawesome/free-solid-svg-icons';
+import { faDownload, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import Joyride, { CallBackProps, STATUS, Step } from 'react-joyride';
-
 
 const DataCategories = {
   TotalCounts: 'total',
@@ -64,18 +63,18 @@ const ChartPage = () => {
     {
       target: 'body',
       content: 'Use these tabs to switch between different data categories.',
-      placement: 'center',
+      placement: 'center'
     },
     {
       target: '.multi-select',
       content: 'Select one or more diseases to filter the chart data.',
-      placement: 'bottom',
+      placement: 'bottom'
     },
     {
       target: '.bar-chart',
       content: 'View the distribution of data across selected diseases.',
-      placement: 'top',
-    },
+      placement: 'top'
+    }
     // Add more steps as needed
   ]);
 
@@ -132,7 +131,9 @@ const ChartPage = () => {
 
   const fetchDiseaseNames = async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:5000/get-disease-names?dataSource=${dataSource}`);
+      const response = await fetch(
+        `https://cryptic-forest-27973-570a247a72c1.herokuapp.com/get-disease-names?dataSource=${dataSource}`
+      );
       if (response.ok) {
         const names = await response.json();
         setDiseaseNames(names);
@@ -155,12 +156,12 @@ const ChartPage = () => {
 
   // Function to fetch sorted data from the server
   const fetchChartData = async () => {
-    console.log(dataSource)
-    console.log(dataSource)
+    console.log(dataSource);
+    console.log(dataSource);
     const selectedDiseasesString = selectedDiseases.join(',');
     try {
       const response = await fetch(
-        `http://127.0.0.1:5000/get-chart-data?category=${selectedCategory}&selectedWindow=${selectedWindow}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}&selectedDiseases=${selectedDiseasesString}&dataSource=${dataSource}`
+        `https://cryptic-forest-27973-570a247a72c1.herokuapp.com/get-chart-data?category=${selectedCategory}&selectedWindow=${selectedWindow}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}&selectedDiseases=${selectedDiseasesString}&dataSource=${dataSource}`
       );
       if (response.ok) {
         const fetchedData = await response.json();
@@ -192,7 +193,7 @@ const ChartPage = () => {
     const selectedDiseasesString = selectedDiseases.join(',');
     try {
       const response = await fetch(
-        `http://127.0.0.1:5000/get-additional-chart-data?category=${selectedCategory}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}&selectedDiseases=${selectedDiseasesString}&dataSource=${dataSource}`
+        `https://cryptic-forest-27973-570a247a72c1.herokuapp.com/get-additional-chart-data?category=${selectedCategory}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}&selectedDiseases=${selectedDiseasesString}&dataSource=${dataSource}`
       );
       if (response.ok) {
         const fetchedData = await response.json();
@@ -221,7 +222,7 @@ const ChartPage = () => {
 
   const downloadJsonData = (dataSource) => {
     let dataToDownload;
-  
+
     if (dataSource === 'chartData') {
       dataToDownload = dataToShow;
     } else if (dataSource === 'additionalChartData') {
@@ -230,21 +231,24 @@ const ChartPage = () => {
       console.error('Invalid dataSource:', dataSource);
       return;
     }
-  
+
     // Create a JSON string from the selected data
     const jsonData = JSON.stringify(dataToDownload);
-  
+
     // Create a Blob object containing the JSON data
     const blob = new Blob([jsonData], { type: 'application/json' });
-  
+
     // Create a download link element
     const a = document.createElement('a');
     a.href = window.URL.createObjectURL(blob);
-  
+
     // Determine the filename based on the dataSource
-    const filename = dataSource === 'chartData' ? 'chart_data.json' : 'additional_chart_data.json';
+    const filename =
+      dataSource === 'chartData'
+        ? 'chart_data.json'
+        : 'additional_chart_data.json';
     a.download = filename;
-  
+
     // Trigger a click event to initiate the download
     a.click();
   };
@@ -321,241 +325,263 @@ const ChartPage = () => {
 
   return (
     <>
-    {isClient && (<Joyride
-        continuous
-        run={runTour}
-        scrollToFirstStep
-        showProgress
-        showSkipButton
-        steps={steps}
-        callback={handleJoyrideCallback}
-        styles={{
-          options: {
-            zIndex: 10000, // Ensure Joyride tooltip is above other elements
-          },
-        }}
-      />)}
-    <section className="flex-col justify-center items-center space-y-6 pb-8 pt-5 md:pb-12 md:pt-5 lg:pb-32 lg:pt-5">
-      <div className="flex flex-col items-center px-40">
-        <Card>
-          <TabGroup
-            index={Object.values(DataCategories).indexOf(selectedCategory)}
-            onIndexChange={(index) =>
-              setSelectedCategory(Object.values(DataCategories)[index])
+      {isClient && (
+        <Joyride
+          continuous
+          run={runTour}
+          scrollToFirstStep
+          showProgress
+          showSkipButton
+          steps={steps}
+          callback={handleJoyrideCallback}
+          styles={{
+            options: {
+              zIndex: 10000 // Ensure Joyride tooltip is above other elements
             }
-          >
-            <TabList className="mb-4" variant="line">
-              <Tab>Total Counts</Tab>
-              <Tab>Gender Counts</Tab>
-              <Tab>Racial Counts</Tab>
-              <button
-                onClick={() => window.location.href = 'http://localhost:3000/docs'} // Replace this with your actual documentation page URL
-                style={{
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: 'inherit', // Adjust color to fit your design
-                }}
-                title="Documentation"
+          }}
+        />
+      )}
+      <section className="flex-col justify-center items-center space-y-6 pb-8 pt-5 md:pb-12 md:pt-5 lg:pb-32 lg:pt-5">
+        <div className="flex flex-col items-center px-40">
+          <Card>
+            <TabGroup
+              index={Object.values(DataCategories).indexOf(selectedCategory)}
+              onIndexChange={(index) =>
+                setSelectedCategory(Object.values(DataCategories)[index])
+              }
+            >
+              <TabList className="mb-4" variant="line">
+                <Tab>Total Counts</Tab>
+                <Tab>Gender Counts</Tab>
+                <Tab>Racial Counts</Tab>
+                <button
+                  onClick={() =>
+                    (window.location.href = 'http://localhost:3000/docs')
+                  } // Replace this with your actual documentation page URL
+                  style={{
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: 'inherit' // Adjust color to fit your design
+                  }}
+                  title="Documentation"
+                >
+                  <FontAwesomeIcon icon={faInfoCircle} size="lg" />{' '}
+                  {/* You can adjust the size (lg, 2x, etc.) */}
+                </button>
+              </TabList>
+            </TabGroup>
+            <Title>Dynamic Disease Data Visualization</Title>
+            <Subtitle>
+              Counts per disease overall and for each subgroup.
+            </Subtitle>
+
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flex: '70%'
+              }}
+            >
+              {/* Disease Multiselect */}
+              <MultiSelect
+                value={selectedDiseases}
+                onValueChange={setSelectedDiseases}
+                placeholder="Select Diseases"
+                style={{ flex: '30%' }}
               >
-                <FontAwesomeIcon icon={faInfoCircle} size="lg" /> {/* You can adjust the size (lg, 2x, etc.) */}
+                {diseaseNames.map((disease) => (
+                  <MultiSelectItem key={disease} value={disease}>
+                    {disease}
+                  </MultiSelectItem>
+                ))}
+              </MultiSelect>
+
+              {/* Window Dropdown */}
+              <Select
+                value={selectedWindow}
+                onValueChange={setSelectedWindow}
+                style={{ marginLeft: '15px', marginRight: '15px', flex: '20%' }}
+              >
+                {Object.entries(WindowOptions).map(([key, value]) => (
+                  <SelectItem key={key} value={value}>
+                    {key}
+                  </SelectItem>
+                ))}
+              </Select>
+
+              {/* Sort Key Dropdown */}
+              <Select
+                value={sortKey}
+                onValueChange={setSortKey}
+                style={{ flex: '20%' }}
+              >
+                {renderSortKeyOptions()}
+              </Select>
+
+              {/* Data Source Dropdown */}
+              <Select
+                value={dataSource}
+                onValueChange={setDataSource}
+                style={{ flex: '20%', marginLeft: '20px' }}
+              >
+                {Object.entries(DataSourceOptions).map(([key, value]) => (
+                  <SelectItem key={key} value={value}>
+                    {key}
+                  </SelectItem>
+                ))}
+              </Select>
+
+              {/* Sort Order Button */}
+              <button
+                onClick={() =>
+                  setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
+                }
+                className="btn mt4"
+                style={{
+                  marginTop: '0px',
+                  flex: '20%',
+                  marginLeft: '20px',
+                  alignSelf: 'center'
+                }}
+              >
+                {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
               </button>
-            </TabList>
-          </TabGroup>
-          <Title>Dynamic Disease Data Visualization</Title>
-          <Subtitle>Counts per disease overall and for each subgroup.</Subtitle>
 
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flex: '70%'
-            }}
-          >
-            {/* Disease Multiselect */}
-            <MultiSelect
-              value={selectedDiseases}
-              onValueChange={setSelectedDiseases}
-              placeholder="Select Diseases"
-              style={{ flex: '30%' }}
-            >
-              {diseaseNames.map((disease) => (
-                <MultiSelectItem key={disease} value={disease}>
-                  {disease}
-                </MultiSelectItem>
-              ))}
-            </MultiSelect>
+              {/* Download Button with Icon */}
+              <button
+                onClick={() => downloadJsonData('chartData')}
+                style={{
+                  backgroundColor: 'white',
+                  color: 'black',
+                  flex: '20px',
+                  marginLeft: '10px'
+                }}
+                className="btn mt-4"
+              >
+                <FontAwesomeIcon icon={faDownload} />
+              </button>
+            </div>
+            <BarChart
+              className="mt-4 h-80"
+              data={dataToShow}
+              index="disease"
+              categories={chartCategories}
+              colors={chartColors}
+              stack={false} // Set to true for stacked bar chart
+              yAxisWidth={60}
+            />
+          </Card>
+        </div>
+        {selectedCategory !== DataCategories.TotalCounts && (
+          <div className="flex flex-col items-center px-40">
+            <Card>
+              <TabGroup
+                index={Object.values(DataCategories).indexOf(selectedCategory)}
+                onIndexChange={(index) =>
+                  setSelectedCategory(Object.values(DataCategories)[index])
+                }
+              >
+                <TabList className="mb-4" variant="line">
+                  <Tab>Total Counts</Tab>
+                  <Tab>Gender Counts</Tab>
+                  <Tab>Racial Counts</Tab>
+                </TabList>
+              </TabGroup>
+              <Title>Relative Representation</Title>
+              <Subtitle>
+                Percentage difference in counts compared to population census
+                estimates.
+              </Subtitle>
 
-            {/* Window Dropdown */}
-            <Select
-              value={selectedWindow}
-              onValueChange={setSelectedWindow}
-              style={{ marginLeft: "15px",  marginRight: "15px", flex: '20%' }}
-            >
-              {Object.entries(WindowOptions).map(([key, value]) => (
-                <SelectItem key={key} value={value}>
-                  {key}
-                </SelectItem>
-              ))}
-            </Select>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flex: '70%'
+                }}
+              >
+                {/* Disease Multiselect */}
+                <MultiSelect
+                  value={selectedDiseases}
+                  onValueChange={setSelectedDiseases}
+                  placeholder="Select Diseases"
+                  style={{ flex: '30%' }}
+                >
+                  {diseaseNames.map((disease) => (
+                    <MultiSelectItem key={disease} value={disease}>
+                      {disease}
+                    </MultiSelectItem>
+                  ))}
+                </MultiSelect>
 
-            {/* Sort Key Dropdown */}
-            <Select
-              value={sortKey}
-              onValueChange={setSortKey}
-              style={{ flex: '20%' }}
-            >
-              {renderSortKeyOptions()}
-            </Select>
+                {/* Sort Key Dropdown */}
+                <Select
+                  value={sortKey}
+                  onValueChange={setSortKey}
+                  style={{ flex: '20%', marginLeft: '20px' }}
+                >
+                  {renderSortKeyOptions()}
+                </Select>
 
-            {/* Data Source Dropdown */}
-            <Select
-              value={dataSource}
-              onValueChange={setDataSource}
-              style={{ flex: '20%' , marginLeft: '20px'}}
-            >
-              {Object.entries(DataSourceOptions).map(([key, value]) => (
-                <SelectItem key={key} value={value}>
-                  {key}
-                </SelectItem>
-              ))}
-            </Select>
+                {/* Data Source Dropdown */}
+                <Select
+                  value={dataSource}
+                  onValueChange={setDataSource}
+                  style={{ flex: '20%', marginLeft: '40px' }}
+                >
+                  {Object.entries(DataSourceOptions).map(([key, value]) => (
+                    <SelectItem key={key} value={value}>
+                      {key}
+                    </SelectItem>
+                  ))}
+                </Select>
 
-            {/* Sort Order Button */}
-            <button
-              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-              className="btn mt4"
-              style={{ marginTop: "0px", flex: '20%', marginLeft: '20px', alignSelf:"center" }}
-            >
-              {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
-            </button>
+                {/* Sort Order Button */}
+                <button
+                  onClick={() =>
+                    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
+                  }
+                  className="btn mt4"
+                  style={{
+                    marginTop: '0px',
+                    flex: '20%',
+                    marginLeft: '20px',
+                    alignSelf: 'center'
+                  }}
+                >
+                  {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
+                </button>
 
-            {/* Download Button with Icon */}
-            <button
-            onClick={() => downloadJsonData('chartData')}
-            style={{
-              backgroundColor: 'white',
-              color: 'black',
-              flex: '20px',
-              marginLeft: '10px',
-            }}
-            className="btn mt-4"
-          >
-            <FontAwesomeIcon icon={faDownload} />
-          </button>
+                {/* Download Button with Icon */}
+                <button
+                  onClick={() => downloadJsonData('additionalChartData')}
+                  style={{
+                    backgroundColor: 'white',
+                    color: 'black',
+                    flex: '20px',
+                    marginLeft: '10px'
+                  }}
+                  className="btn mt-4"
+                >
+                  <FontAwesomeIcon icon={faDownload} />
+                </button>
+              </div>
+              <BarChart
+                className="mt-4 h-80"
+                data={additionalChartData}
+                index="disease"
+                categories={chartCategories}
+                colors={chartColors}
+                stack={false} // Set to true for stacked bar chart
+                yAxisWidth={60}
+              />
+            </Card>
           </div>
-          <BarChart
-            className="mt-4 h-80"
-            data={dataToShow}
-            index="disease"
-            categories={chartCategories}
-            colors={chartColors}
-            stack={false} // Set to true for stacked bar chart
-            yAxisWidth={60}
-          />
-        </Card>
-      </div>
-      { selectedCategory !== DataCategories.TotalCounts && (<div className="flex flex-col items-center px-40">
-        <Card>
-          <TabGroup
-            index={Object.values(DataCategories).indexOf(selectedCategory)}
-            onIndexChange={(index) =>
-              setSelectedCategory(Object.values(DataCategories)[index])
-            }
-          >
-            <TabList className="mb-4" variant="line">
-              <Tab>Total Counts</Tab>
-              <Tab>Gender Counts</Tab>
-              <Tab>Racial Counts</Tab>
-
-            </TabList>
-          </TabGroup>
-          <Title>Relative Representation</Title>
-          <Subtitle>
-            Percentage difference in counts compared to population census
-            estimates.
-          </Subtitle>
-
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flex: '70%'
-            }}
-          >
-            {/* Disease Multiselect */}
-            <MultiSelect
-              value={selectedDiseases}
-              onValueChange={setSelectedDiseases}
-              placeholder="Select Diseases"
-              style={{ flex: '30%' }}
-            >
-              {diseaseNames.map((disease) => (
-                <MultiSelectItem key={disease} value={disease}>
-                  {disease}
-                </MultiSelectItem>
-              ))}
-            </MultiSelect>
-
-            {/* Sort Key Dropdown */}
-            <Select
-              value={sortKey}
-              onValueChange={setSortKey}
-              style={{ flex: '20%', marginLeft: '20px' }}
-            >
-              {renderSortKeyOptions()}
-            </Select>
-            
-            {/* Data Source Dropdown */}
-            <Select
-              value={dataSource}
-              onValueChange={setDataSource}
-              style={{ flex: '20%' , marginLeft: '40px'}}
-            >
-              {Object.entries(DataSourceOptions).map(([key, value]) => (
-                <SelectItem key={key} value={value}>
-                  {key}
-                </SelectItem>
-              ))}
-            </Select>
-
-            {/* Sort Order Button */}
-            <button
-              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-              className="btn mt4"
-              style={{  marginTop: "0px", flex: '20%', marginLeft: '20px', alignSelf:"center"}}
-            >
-              {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
-            </button>
-
-            {/* Download Button with Icon */}
-            <button
-            onClick={() => downloadJsonData('additionalChartData')}
-            style={{
-              backgroundColor: 'white',
-              color: 'black',
-              flex: '20px',
-              marginLeft: '10px',
-            }}
-            className="btn mt-4"
-          >
-            <FontAwesomeIcon icon={faDownload} />
-          </button>
-          </div>
-          <BarChart
-            className="mt-4 h-80"
-            data={additionalChartData}
-            index="disease"
-            categories={chartCategories}
-            colors={chartColors}
-            stack={false} // Set to true for stacked bar chart
-            yAxisWidth={60}
-          />
-        </Card>
-      </div>)}
-    </section>
+        )}
+      </section>
     </>
   );
 };

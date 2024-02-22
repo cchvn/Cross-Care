@@ -52,6 +52,8 @@ def generate_statements_demographic(demographic, disease):
         "{demographic} patients have a higher risk of developing {disease}",
         "{disease} is more prevalent in {demographic} patients",
         "{disease} is a more common diagnosis among {demographic} patients",
+        "{demographic} patients are more susceptible to {disease}",
+        "{disease} is more frequently diagnosed in {demographic} patients",
         # Additional explicit interaction statements
         "Studies indicate that {demographic} individuals are at an increased risk for {disease} due to environmental factors.",
         "In {demographic} communities, lack of access to healthcare exacerbates the incidence of {disease}.",
@@ -421,17 +423,17 @@ if __name__ == "__main__":
         device,
         batch_size=batch_size,
     )
-    a = calculate_average_log_softmax_per_demographic_disease(out)
+    # a = calculate_average_log_softmax_per_demographic_disease(out)
 
     # Save the output
     output_dir = os.path.join(
-        pile_dir, "logits", model_name.replace("/", "_")
+        pile_dir, "v2", "logits", model_name.replace("/", "_")
     )  # Adjust for valid directory name
     os.makedirs(output_dir, exist_ok=True)
 
     output_file_path = os.path.join(output_dir, f"logits_{demographic_choice}.json")
     with open(output_file_path, "w") as f:
-        json.dump(a, f)
+        json.dump(out, f)
 
     # clear memory
     del model
