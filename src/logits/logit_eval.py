@@ -423,17 +423,17 @@ if __name__ == "__main__":
         device,
         batch_size=batch_size,
     )
-    a = calculate_average_log_softmax_per_demographic_disease(out)
+    # a = calculate_average_log_softmax_per_demographic_disease(out)
 
     # Save the output
     output_dir = os.path.join(
-        pile_dir, "logits", model_name.replace("/", "_")
+        pile_dir, "v2", "logits", model_name.replace("/", "_")
     )  # Adjust for valid directory name
     os.makedirs(output_dir, exist_ok=True)
 
     output_file_path = os.path.join(output_dir, f"logits_{demographic_choice}.json")
     with open(output_file_path, "w") as f:
-        json.dump(a, f)
+        json.dump(out, f)
 
     # clear memory
     del model
