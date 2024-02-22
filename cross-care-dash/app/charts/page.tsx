@@ -33,7 +33,7 @@ const DataCategories = {
 };
 
 const WindowOptions = {
-  Total: 'total',
+  // Total: 'total',
   Window10: 'window_10',
   Window50: 'window_50',
   Window100: 'window_100',
@@ -54,7 +54,7 @@ const ChartPage = () => {
   const [sortKey, setSortKey] = useState('disease');
   const [sortOrder, setSortOrder] = useState('asc');
   const [dataToShow, setDataToShow] = useState([]);
-  const [selectedWindow, setSelectedWindow] = useState(WindowOptions.Total);
+  const [selectedWindow, setSelectedWindow] = useState(WindowOptions.Window250);
   const [dataSource, setDataSource] = useState(DataSourceOptions.Arxiv); // State for selected data source
   const [selectedDiseases, setSelectedDiseases] = useState([]);
   const [diseaseNames, setDiseaseNames] = useState([]);

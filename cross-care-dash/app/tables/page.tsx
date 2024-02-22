@@ -31,7 +31,7 @@ const DataCategories = {
 };
 
 const WindowOptions = {
-  Total: 'total',
+  // Total: 'total',
   Window10: 'window_10',
   Window50: 'window_50',
   Window100: 'window_100',
@@ -53,7 +53,7 @@ const TablePage = () => {
   const [sortKey, setSortKey] = useState('disease');
   const [sortOrder, setSortOrder] = useState('asc'); // Default sort order
   const [dataToShow, setDataToShow] = useState([]);
-  const [selectedWindow, setSelectedWindow] = useState(WindowOptions.Total);
+  const [selectedWindow, setSelectedWindow] = useState(WindowOptions.Window250);
   const [dataSource, setDataSource] = useState(DataSourceOptions.Arxiv); // State for selected data source
   const [selectedDiseases, setSelectedDiseases] = useState([]);
   const [diseaseNames, setDiseaseNames] = useState([]);
@@ -155,6 +155,9 @@ const TablePage = () => {
   // Function to fetch sorted data from the server
   const fetchSortedData = async () => {
     const selectedDiseasesString = selectedDiseases.join(',');
+    if (selectedCategory === DataCategories.TotalCounts) {
+      setDataSource(DataSourceOptions.Pile)
+    }
     try {
       const response = await fetch(
         `http://127.0.0.1:5000/get-sorted-data?category=${selectedCategory}&selectedWindow=${selectedWindow}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}&selectedDiseases=${selectedDiseasesString}&dataSource=${dataSource}`
@@ -194,6 +197,7 @@ const TablePage = () => {
     currentPage,
     selectedDiseases
   ]);
+
   // Determine display names based on selected category
   let displayNames = {};
   if (selectedCategory === DataCategories.TotalCounts) {
@@ -352,7 +356,7 @@ const TablePage = () => {
             </MultiSelect>
 
             {/* Window Dropdown */}
-            <Select
+            {selectedCategory !== DataCategories.TotalCounts && <Select
               value={selectedWindow}
               onValueChange={setSelectedWindow}
               style={{ flex: '20%' , marginLeft: '40px'}}
@@ -362,10 +366,10 @@ const TablePage = () => {
                   {key}
                 </SelectItem>
               ))}
-            </Select>
+            </Select>}
 
             {/* Data Source Dropdown */}
-            <Select
+            {selectedCategory !== DataCategories.TotalCounts && <Select
               value={dataSource}
               onValueChange={setDataSource}
               style={{ flex: '20%' , marginLeft: '40px'}}
@@ -375,7 +379,7 @@ const TablePage = () => {
                   {key}
                 </SelectItem>
               ))}
-            </Select>
+            </Select>}
 
             {renderDownloadButton(() => downloadJsonData())}
           </div>
