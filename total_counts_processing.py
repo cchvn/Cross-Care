@@ -8,7 +8,7 @@ api_url = "https://api.infini-gram.io/"
 headers = {"Content-Type": "application/json"}
 
 # Define the list of corpora
-corpora = ["v4_pileval_llama", "v4_piletrain_llama"]
+corpora = ["v4_piletrain_llama"] # Can merge multiple corpora 
 
 # Function to generate case variations
 def generate_case_variations(term):
