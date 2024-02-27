@@ -4,7 +4,7 @@ class DiseaseDemographicTemplates:
         self.gender = {
             'en': ["male", "female", "non-binary"],
             'zh': ["男性", "女性", "非二元"],
-            'es': ["masculino", "femenino", "no binario"],
+            'es': ["masculinos", "femeninos", "no binarios"],
             'fr': ["masculin", "féminin", "non-binaire"]
         }
         # Race translations
