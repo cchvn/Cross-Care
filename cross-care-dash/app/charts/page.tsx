@@ -132,7 +132,7 @@ const ChartPage = () => {
   const fetchDiseaseNames = async () => {
     try {
       const response = await fetch(
-        `https://cryptic-forest-27973-570a247a72c1.herokuapp.com/get-disease-names?dataSource=${dataSource}`
+        `http://127.0.0.1:5000/get-disease-names?dataSource=${dataSource}`
       );
       if (response.ok) {
         const names = await response.json();
@@ -161,7 +161,7 @@ const ChartPage = () => {
     const selectedDiseasesString = selectedDiseases.join(',');
     try {
       const response = await fetch(
-        `https://cryptic-forest-27973-570a247a72c1.herokuapp.com/get-chart-data?category=${selectedCategory}&selectedWindow=${selectedWindow}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}&selectedDiseases=${selectedDiseasesString}&dataSource=${dataSource}`
+        `http://127.0.0.1:5000/get-chart-data?category=${selectedCategory}&selectedWindow=${selectedWindow}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}&selectedDiseases=${selectedDiseasesString}&dataSource=${dataSource}`
       );
       if (response.ok) {
         const fetchedData = await response.json();
@@ -193,7 +193,7 @@ const ChartPage = () => {
     const selectedDiseasesString = selectedDiseases.join(',');
     try {
       const response = await fetch(
-        `https://cryptic-forest-27973-570a247a72c1.herokuapp.com/get-additional-chart-data?category=${selectedCategory}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}&selectedDiseases=${selectedDiseasesString}&dataSource=${dataSource}`
+        `http://127.0.0.1:5000/get-additional-chart-data?category=${selectedCategory}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}&selectedDiseases=${selectedDiseasesString}&dataSource=${dataSource}`
       );
       if (response.ok) {
         const fetchedData = await response.json();
