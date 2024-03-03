@@ -50,7 +50,6 @@ const DataSourceOptions = {
   Github: 'github',
   Wikipedia: 'wikipedia', // Change the URL to your custom data source endpoint
   StackExchange: 'stackexchange',
-  Pile: 'pile'
 };
 
 const TablePage = () => {
@@ -198,23 +197,41 @@ const TablePage = () => {
   const fetchSortedData = async () => {
     const selectedDiseasesString = selectedDiseases.join(',');
     if (selectedCategory === DataCategories.TotalCounts) {
-      setDataSource(DataSourceOptions.Pile)
-    }
-    try {
-      const response = await fetch(
-        `http://127.0.0.1:5000/get-sorted-data?category=${selectedCategory}&selectedWindow=${selectedWindow}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}&selectedDiseases=${selectedDiseasesString}&dataSource=${dataSource}`
-      );
-      if (response.ok) {
-        const data = await response.json();
-        setDataSize(data[0]);
-        const sortedData = data[1];
-        console.log('Fetched Data:', sortedData);
-        setDataToShow(sortedData);
-      } else {
-        console.error('Server error:', response.status);
+      console.log("HERE")
+      try {
+        const response = await fetch(
+          `http://127.0.0.1:5000/get-sorted-data?category=${selectedCategory}&selectedWindow=${selectedWindow}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}&selectedDiseases=${selectedDiseasesString}&dataSource=pile`
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setDataSize(data[0]);
+          const sortedData = data[1];
+          console.log('Fetched Data:', sortedData);
+          setDataToShow(sortedData);
+        } else {
+          console.error('Server error:', response.status);
+        }
+      } catch (error) {
+        console.error('Network error:', error);
       }
-    } catch (error) {
-      console.error('Network error:', error);
+    }
+    else{
+      try {
+        const response = await fetch(
+          `http://127.0.0.1:5000/get-sorted-data?category=${selectedCategory}&selectedWindow=${selectedWindow}&sortKey=${sortKey}&sortOrder=${sortOrder}&page=${currentPage}&per_page=${pageSize}&selectedDiseases=${selectedDiseasesString}&dataSource=${dataSource}`
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setDataSize(data[0]);
+          const sortedData = data[1];
+          console.log('Fetched Data:', sortedData);
+          setDataToShow(sortedData);
+        } else {
+          console.error('Server error:', response.status);
+        }
+      } catch (error) {
+        console.error('Network error:', error);
+      }
     }
   };
 
